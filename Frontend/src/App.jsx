@@ -21,7 +21,7 @@ function SearchPage() {
         return;
     }
 
-    fetch(`http://127.0.0.1:8000/search?q=${query}`)
+    fetch(`https://gpcr.onrender.com/search?q=${query}`)
         .then(res => res.json())
         .then(data => setResults(data));
 

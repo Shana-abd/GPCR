@@ -12,11 +12,11 @@ export default function GpcrDetail() {
 
     useEffect(() => {
 
-        fetch(`http://127.0.0.1:8000/gpcr/${gpcr_id}`)
+        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}`)
             .then(res => res.json())
             .then(data => setGpcr(data));
 
-        fetch(`http://127.0.0.1:8000/gpcr/${gpcr_id}/drugs`)
+        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/drugs`)
             .then(res => res.json())
             .then(data => setDrugs(data));
 
