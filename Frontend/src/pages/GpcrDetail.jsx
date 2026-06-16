@@ -1,25 +1,18 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/NavBar";
-
 
 export default function GpcrDetail() {
 
     const { gpcr_id } = useParams();
 
     const [gpcr, setGpcr] = useState(null);
-    const [drugs, setDrugs] = useState([]);
+
     useEffect(() => {
 
         fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}`)
             .then(res => res.json())
             .then(data => setGpcr(data));
-
-        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/drugs`)
-            .then(res => res.json())
-            .then(data => setDrugs(data));
-        
 
     }, [gpcr_id]);
 
@@ -45,16 +38,23 @@ export default function GpcrDetail() {
 
             <p><b>Sequence Length:</b> {gpcr.seq_length}</p>
 
-           
-            <h2>GPCR Information</h2>
-            <h2>Explore This Receptor</h2>
+            <h2
+                style={{
+                    marginTop: "50px",
+                    marginBottom: "30px",
+                    textAlign: "center"
+                }}
+            >
+                Explore This Receptor
+            </h2>
 
             <div
                 style={{
                     display: "flex",
+                    justifyContent: "center",
                     gap: "20px",
-                    flexWrap: "wrap",
-                    marginTop: "20px"
+                    marginTop: "20px",
+                    flexWrap: "wrap"
                 }}
             >
 
@@ -70,65 +70,73 @@ export default function GpcrDetail() {
                             border: "1px solid #444",
                             borderRadius: "12px",
                             padding: "20px",
-                            width: "250px",
+                            width: "220px",
+                            height: "120px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
                             cursor: "pointer"
                         }}
                     >
-      <h3>Expression Data</h3>
-      <p>View tissue expression profiles</p>
-    </div>
-  </Link>
+                        <h3>Expression Data</h3>
+                        <p>View tissue expression profiles</p>
+                    </div>
+                </Link>
 
-  <Link
-    to={`/gpcr/${gpcr_id}/drugs`}
-    style={{
-      textDecoration: "none",
-      color: "inherit"
-    }}
-  >
-  <Link
-    to={`/gpcr/${gpcr_id}/structure`}
-    style={{
-        textDecoration: "none",
-        color: "inherit"
-    }}
-  >
-    <div
-        style={{
-        border: "1px solid #444",
-        borderRadius: "12px",
-        padding: "20px",
-        width: "250px",
-        cursor: "pointer"
-    }}
-  >
-    <h3>Sequence & Structure</h3>
-    <p>View sequence and structural information</p>
-  </div>
-</Link>
-    <div
-      style={{
-        border: "1px solid #444",
-        borderRadius: "12px",
-        padding: "20px",
-        width: "250px",
-        cursor: "pointer"
-      }}
-    >
-      <h3>Drug Interactions</h3>
-      <p>View associated drugs</p>
-    </div>
-  </Link>
+                <Link
+                    to={`/gpcr/${gpcr_id}/structure`}
+                    style={{
+                        textDecoration: "none",
+                        color: "inherit"
+                    }}
+                >
+                    <div
+                        style={{
+                            border: "1px solid #444",
+                            borderRadius: "12px",
+                            padding: "20px",
+                            width: "220px",
+                            height: "120px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            cursor: "pointer"
+                        }}
+                    >
+                        <h3>Sequence & Structure</h3>
+                        <p>View sequence and structural information</p>
+                    </div>
+                </Link>
 
-</div>
+                <Link
+                    to={`/gpcr/${gpcr_id}/drugs`}
+                    style={{
+                        textDecoration: "none",
+                        color: "inherit"
+                    }}
+                >
+                    <div
+                        style={{
+                            border: "1px solid #444",
+                            borderRadius: "12px",
+                            padding: "20px",
+                            width: "220px",
+                            height: "120px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            cursor: "pointer"
+                        }}
+                    >
+                        <h3>Drug Interactions</h3>
+                        <p>View associated drugs</p>
+                    </div>
+                </Link>
 
-            <h3>Data Sources</h3>
-
-            <ul>
-                <li>ChEMBL</li>
-                <li>Human Protein Atlas (HPA)</li>
-                <li>GTEx</li>
-            </ul>
+            </div>
 
         </div>
     );
