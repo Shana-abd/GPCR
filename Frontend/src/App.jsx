@@ -32,21 +32,79 @@ function SearchPage() {
   }, [query]);
 
   return (
-    <div style={{ padding: "40px" }}>
+    <div
+      style={{
+        padding: "40px",
+        textAlign: "center"
+      }}
+    >
       <Navbar />
 
-      <h1>GPCR Database</h1>
+      <div style={{ marginTop: "60px" }}>
 
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search receptor, drug, synonym, or ChEMBL ID..."
-      />
+        <h1>GPCR Database</h1>
 
-      <hr />
+        <p
+          style={{
+            fontSize: "18px",
+            marginBottom: "30px",
+            color: "#9ca3af"
+          }}
+        >
+          Integrated GPCR, Drug, Expression, Bioactivity and Side Effect Resource
+        </p>
+
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search receptor, drug, synonym, or ChEMBL ID..."
+          style={{
+            width: "650px",
+            maxWidth: "90%",
+            padding: "14px",
+            fontSize: "16px",
+            borderRadius: "10px",
+            border: "1px solid #444"
+          }}
+        />
+
+        <div
+          style={{
+            marginTop: "25px",
+            marginBottom: "40px",
+            display: "flex",
+            justifyContent: "center",
+            gap: "30px",
+            flexWrap: "wrap"
+          }}
+        >
+          <span>805 GPCRs</span>
+          <span>330,562 Molecules</span>
+          <span>592,361 Interactions</span>
+          <span>12,758 Side Effects</span>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+            marginBottom: "50px"
+          }}
+        >
+          <Link to="/gpcrs">
+            Browse GPCRs
+          </Link>
+
+          <Link to="/stats">
+            Statistics
+          </Link>
+        </div>
+
+      </div>
 
       {results.length > 0 && (
-        <p>
+        <p style={{ marginBottom: "20px" }}>
           Found {results.length} result(s)
         </p>
       )}
@@ -55,57 +113,67 @@ function SearchPage() {
         <p>No results found.</p>
       )}
 
-      {results.map((r) => (
-        <div
-          key={`${r.result_type}-${r.id}`}
-          style={{
-            border: "1px solid #ddd",
-            padding: "12px",
-            marginBottom: "12px",
-            borderRadius: "8px"
-          }}
-        >
+      <div
+        style={{
+          maxWidth: "900px",
+          margin: "0 auto"
+        }}
+      >
+        {results.map((r) => (
 
-          {r.result_type === "gpcr" ? (
+          <div
+            key={`${r.result_type}-${r.id}`}
+            style={{
+              border: "1px solid #ddd",
+              padding: "12px",
+              marginBottom: "12px",
+              borderRadius: "8px",
+              textAlign: "left"
+            }}
+          >
 
-            <>
-              <h3>
-                <Link to={`/gpcr/${r.id}`}>
-                  🧬 {r.name}
-                </Link>
-              </h3>
+            {r.result_type === "gpcr" ? (
 
-              <p>
-                <b>Type:</b> GPCR
-              </p>
+              <>
+                <h3>
+                  <Link to={`/gpcr/${r.id}`}>
+                    🧬 {r.name}
+                  </Link>
+                </h3>
 
-              <p>
-                <b>ID:</b> {r.id}
-              </p>
-            </>
+                <p>
+                  <b>Type:</b> GPCR
+                </p>
 
-          ) : (
+                <p>
+                  <b>ID:</b> {r.id}
+                </p>
+              </>
 
-            <>
-              <h3>
-                <Link to={`/drug/${r.id}`}>
-                  💊 {r.name}
-                </Link>
-              </h3>
+            ) : (
 
-              <p>
-                <b>Type:</b> Drug
-              </p>
+              <>
+                <h3>
+                  <Link to={`/drug/${r.id}`}>
+                    💊 {r.name}
+                  </Link>
+                </h3>
 
-              <p>
-                <b>ID:</b> {r.id}
-              </p>
-            </>
+                <p>
+                  <b>Type:</b> Drug
+                </p>
 
-          )}
+                <p>
+                  <b>ID:</b> {r.id}
+                </p>
+              </>
 
-        </div>
-      ))}
+            )}
+
+          </div>
+
+        ))}
+      </div>
 
     </div>
   );

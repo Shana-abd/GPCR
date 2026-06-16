@@ -69,7 +69,7 @@ export default function DrugDetail() {
             >
                 <div
                     style={{
-                        border: "1px solid #444",
+                        border: "1px solid #2E3A35",
                         borderRadius: "12px",
                         padding: "15px",
                         marginBottom: "30px",
@@ -85,7 +85,7 @@ export default function DrugDetail() {
             <div
                 onClick={() => setShowBioactivity(!showBioactivity)}
                 style={{
-                    border: "1px solid #444",
+                    border: "1px solid #2E3A35",
                     borderRadius: "12px",
                     padding: "15px",
                     cursor: "pointer",
@@ -160,7 +160,7 @@ export default function DrugDetail() {
             <div
                 onClick={() => setShowSideEffects(!showSideEffects)}
                 style={{
-                    border: "1px solid #444",
+                    border: "1px solid #2E3A35",
                     borderRadius: "12px",
                     padding: "15px",
                     cursor: "pointer",

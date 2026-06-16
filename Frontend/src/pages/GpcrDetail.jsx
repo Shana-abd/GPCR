@@ -67,7 +67,7 @@ export default function GpcrDetail() {
                 >
                     <div
                         style={{
-                            border: "1px solid #444",
+                            border: "1px solid #2E3A35",
                             borderRadius: "12px",
                             padding: "20px",
                             width: "220px",
@@ -93,7 +93,7 @@ export default function GpcrDetail() {
                 >
                     <div
                         style={{
-                            border: "1px solid #444",
+                            border: "1px solid #2E3A35",
                             borderRadius: "12px",
                             padding: "20px",
                             width: "220px",
@@ -119,7 +119,7 @@ export default function GpcrDetail() {
                 >
                     <div
                         style={{
-                            border: "1px solid #444",
+                            border: "1px solid #2E3A35",
                             borderRadius: "12px",
                             padding: "20px",
                             width: "220px",
