@@ -274,6 +274,126 @@ def get_drug_targets(mol_id: str):
     db.close()
 
     return rows
+@app.get("/drug/{mol_id}/bioactivity")
+def get_drug_bioactivity(mol_id: str):
+
+    db = SessionLocal()
+
+    result = db.execute(
+        text("""
+        SELECT
+            b.bioactivity_id,
+            b.action_type,
+            b.std_type,
+            b.std_value,
+            b.std_units,
+            b.pchembl_value,
+
+            a.assay_type,
+            a.organism,
+            a.assay_tissue,
+            a.target_name,
+
+            g.gpcr_id,
+            g.t_name
+
+        FROM bioactivity b
+
+        LEFT JOIN assay a
+            ON b.assay_id = a.assay_id
+
+        LEFT JOIN gpcr_xrefs x
+            ON a.chembl_target_id = x.chembl_target_id
+
+        LEFT JOIN gpcr g
+            ON x.gpcr_id = g.gpcr_id
+
+        WHERE b.mol_id = :mol_id
+
+        ORDER BY b.pchembl_value DESC NULLS LAST
+
+        LIMIT 100
+        """),
+        {"mol_id": mol_id}
+    )
+
+    rows = result.mappings().all()
+
+    db.close()
+
+    return rows
+
+@app.get("/gpcr/{gpcr_id}/bioactivity")
+def get_gpcr_bioactivity(gpcr_id: int):
+
+    db = SessionLocal()
+
+    result = db.execute(
+        text("""
+        SELECT
+            b.bioactivity_id,
+            b.action_type,
+            b.std_type,
+            b.std_value,
+            b.std_units,
+            b.pchembl_value,
+
+            m.mol_id,
+            m.mol_name
+
+        FROM bioactivity b
+
+        JOIN assay a
+            ON b.assay_id = a.assay_id
+
+        JOIN gpcr_xrefs x
+            ON a.chembl_target_id = x.chembl_target_id
+
+        JOIN molecule m
+            ON b.mol_id = m.mol_id
+
+        WHERE x.gpcr_id = :gpcr_id
+
+        ORDER BY b.pchembl_value DESC NULLS LAST
+
+        LIMIT 100
+        """),
+        {"gpcr_id": gpcr_id}
+    )
+
+    rows = result.mappings().all()
+
+    db.close()
+
+    return rows
+@app.get("/assay/{assay_id}")
+def get_assay(assay_id: int):
+
+    db = SessionLocal()
+
+    result = db.execute(
+        text("""
+        SELECT
+            assay_id,
+            assay_type,
+            organism,
+            assay_tissue,
+            description,
+            chembl_target_id,
+            target_name,
+            target_org,
+            target_type
+        FROM assay
+        WHERE assay_id = :assay_id
+        """),
+        {"assay_id": assay_id}
+    )
+
+    row = result.mappings().first()
+
+    db.close()
+
+    return row
 @app.get("/stats")
 def get_stats():
 

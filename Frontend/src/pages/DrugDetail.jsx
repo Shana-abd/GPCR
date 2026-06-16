@@ -9,6 +9,7 @@ export default function DrugDetail() {
     const [drug, setDrug] = useState(null);
     const [sideEffects, setSideEffects] = useState([]);
     const [targets, setTargets] = useState([]);
+    const [bioactivity, setBioactivity] = useState([]);
 
     useEffect(() => {
 
@@ -23,6 +24,10 @@ export default function DrugDetail() {
         fetch(`https://gpcr.onrender.com/drug/${mol_id}/targets`)
             .then(res => res.json())
             .then(data => setTargets(data));
+
+        fetch(`https://gpcr.onrender.com/drug/${mol_id}/bioactivity`)
+            .then((res) => res.json())
+            .then((data) => setBioactivity(data));
 
     }, [mol_id]);
 
@@ -79,7 +84,65 @@ export default function DrugDetail() {
                 ))
             )}
 
+            <h2>Bioactivity Records</h2>
 
+            <table>
+                <thead>
+                    <tr>
+                        <th>GPCR</th>
+                        <th>Action</th>
+                        <th>Type</th>
+                        <th>Value</th>
+                        <th>Units</th>
+                        <th>pChEMBL</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {bioactivity.map((row) => (
+                        <tr key={row.bioactivity_id}>
+                            <td>{row.t_name}</td>
+                            <td>{row.action_type}</td>
+                            <td>{row.std_type}</td>
+                            <td>{row.std_value}</td>
+                            <td>{row.std_units}</td>
+                            <td>{row.pchembl_value}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            <h2>Experimental Bioactivity</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Drug</th>
+                        <th>Action</th>
+                        <th>Type</th>
+                        <th>Value</th>
+                        <th>Units</th>
+                        <th>pChEMBL</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {bioactivity.map((row) => (
+                        <tr key={row.bioactivity_id}>
+                        <td>
+                            <Link to={`/drug/${row.mol_id}`}>
+                                {row.mol_name}
+                            </Link>
+                        </td>
+                        <td>{row.action_type}</td>
+                        <td>{row.std_type}</td>
+                        <td>{row.std_value}</td>
+                        <td>{row.std_units}</td>
+                        <td>{row.pchembl_value}</td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
 
 
             <h2>Side Effects</h2>

@@ -9,7 +9,7 @@ export default function GpcrDetail() {
 
     const [gpcr, setGpcr] = useState(null);
     const [drugs, setDrugs] = useState([]);
-
+    const [bioactivity, setBioactivity] = useState([]);
     useEffect(() => {
 
         fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}`)
@@ -19,7 +19,9 @@ export default function GpcrDetail() {
         fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/drugs`)
             .then(res => res.json())
             .then(data => setDrugs(data));
-
+        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/bioactivity`)
+            .then((res) => res.json())
+            .then((data) => setBioactivity(data));
     }, [gpcr_id]);
 
     if (!gpcr) {
