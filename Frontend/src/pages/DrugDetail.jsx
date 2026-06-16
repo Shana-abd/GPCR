@@ -62,7 +62,8 @@ export default function DrugDetail() {
                 to={`/drug/${mol_id}/targets`}
                 style={{
                     textDecoration: "none",
-                    color: "inherit"
+                    color: "inherit",
+                    display: "block"
                 }}
             >
                 <div
@@ -70,8 +71,7 @@ export default function DrugDetail() {
                         border: "1px solid #444",
                         borderRadius: "12px",
                         padding: "15px",
-                        cursor: "pointer",
-                        marginBottom: "15px",
+                        marginBottom: "30px",
                         fontWeight: "bold"
                     }}
                 >
