@@ -49,27 +49,42 @@ def get_gpcrs():
 
     return rows
 @app.get("/search")
-def search_gpcr(q: str):
+def search(q: str):
 
     db = SessionLocal()
 
     result = db.execute(
         text("""
-            SELECT
-                g.gpcr_id,
-                g.entry_name,
-                g.t_name
-            FROM gpcr g
-            LEFT JOIN gpcr_xrefs x
-                ON g.gpcr_id = x.gpcr_id
+        SELECT
+            'gpcr' AS result_type,
+            g.gpcr_id::text AS id,
+            g.t_name AS name
 
-            WHERE
-                g.entry_name ILIKE :query
-                OR g.t_name ILIKE :query
-                OR g.alt_names ILIKE :query
-                OR x.chembl_target_id ILIKE :query
-            LIMIT 50
-             
+        FROM gpcr g
+
+        LEFT JOIN gpcr_xrefs x
+            ON g.gpcr_id = x.gpcr_id
+
+        WHERE
+            g.entry_name ILIKE :query
+            OR g.t_name ILIKE :query
+            OR g.alt_names ILIKE :query
+            OR x.chembl_target_id ILIKE :query
+
+        UNION ALL
+
+        SELECT
+            'drug' AS result_type,
+            m.mol_id AS id,
+            m.mol_name AS name
+
+        FROM molecule m
+
+        WHERE
+            m.mol_name ILIKE :query
+            OR m.mol_id ILIKE :query
+
+        LIMIT 50
         """),
         {"query": f"%{q}%"}
     )

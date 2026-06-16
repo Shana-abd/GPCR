@@ -112,39 +112,6 @@ export default function DrugDetail() {
                 </tbody>
             </table>
 
-            <h2>Experimental Bioactivity</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Drug</th>
-                        <th>Action</th>
-                        <th>Type</th>
-                        <th>Value</th>
-                        <th>Units</th>
-                        <th>pChEMBL</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {bioactivity.map((row) => (
-                        <tr key={row.bioactivity_id}>
-                        <td>
-                            <Link to={`/drug/${row.mol_id}`}>
-                                {row.mol_name}
-                            </Link>
-                        </td>
-                        <td>{row.action_type}</td>
-                        <td>{row.std_type}</td>
-                        <td>{row.std_value}</td>
-                        <td>{row.std_units}</td>
-                        <td>{row.pchembl_value}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-
-
             <h2>Side Effects</h2>
             <p>
                 Side effect evidence integrated from

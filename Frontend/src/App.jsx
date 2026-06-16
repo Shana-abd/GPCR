@@ -58,7 +58,7 @@ function SearchPage() {
     )}
       {results.map((r) => (
         <div
-          key={r.gpcr_id}
+          key={`${r.result_type}-${r.id}`}
           style={{
             border: "1px solid #ddd",
             padding: "12px",
@@ -66,25 +66,47 @@ function SearchPage() {
             borderRadius: "8px"
           }}
         >
-          <h3>
-            <Link to={`/gpcr/${r.gpcr_id}`}>
-              {r.t_name}
-            </Link>
-          </h3>
 
-          <p>
-            <b>Entry Name:</b> {r.entry_name}
-          </p>
+          {r.result_type === "gpcr" ? (
 
-          <p>
-            <b>GPCR ID:</b> {r.gpcr_id}
-          </p>
+            <>
+              <h3>
+                <Link to={`/gpcr/${r.id}`}>
+                  🧬 {r.name}
+                </Link>
+              </h3>
+
+              <p>
+                <b>Type:</b> GPCR
+              </p>
+
+              <p>
+                <b>ID:</b> {r.id}
+              </p>
+            </>
+
+          ) : (
+
+            <>
+              <h3>
+                <Link to={`/drug/${r.id}`}>
+                  💊 {r.name}
+                </Link>
+              </h3>
+
+              <p>
+                <b>Type:</b> Drug
+              </p>
+
+              <p>
+                <b>ID:</b> {r.id}
+              </p>
+            </>
+
+          )}
+
         </div>
       ))}
-
-    </div>
-  );
-}
 
 export default function App() {
 
