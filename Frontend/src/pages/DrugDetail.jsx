@@ -10,6 +10,7 @@ export default function DrugDetail() {
     const [sideEffects, setSideEffects] = useState([]);
     const [targets, setTargets] = useState([]);
     const [bioactivity, setBioactivity] = useState([]);
+    const [showSideEffects, setShowSideEffects] = useState(false);
 
     useEffect(() => {
 
@@ -113,11 +114,31 @@ export default function DrugDetail() {
             </table>
 
             <h2>Side Effects</h2>
-            <p>
-                Side effect evidence integrated from
-                SIDER, OFFSIDES, OpenFDA,
-                DrugBank and PubChem.
-            </p>
+
+            <div
+                onClick={() => setShowSideEffects(!showSideEffects)}
+                style={{
+                    border: "1px solid #444",
+                    borderRadius: "12px",
+                    padding: "15px",
+                    cursor: "pointer",
+                    marginBottom: "15px",
+                    fontWeight: "bold"
+                }}
+            >
+                🩺 View Side Effects ({sideEffects.length})
+            </div>
+            {showSideEffects && (
+                <div>
+
+                    {sideEffects.map((effect, idx) => (
+                        <div key={idx}>
+                            {effect.event_name}
+                        </div>
+                    ))}
+
+                </div>
+            )}
 
             {sideEffects.length === 0 ? (
                 <p>No side effect data available.</p>
