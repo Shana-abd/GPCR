@@ -11,6 +11,7 @@ import GpcrDrugs from "./pages/GpcrDrugs";
 import GpcrBioactivity from "./pages/GpcrBioactivity";
 import GpcrDetail from "./pages/GpcrDetail";
 import GpcrStructure from "./pages/GpcrStructure";
+import DrugTargets from "./pages/DrugTargets";
 
 function SearchPage() {
 
@@ -152,6 +153,10 @@ export default function App() {
           element={<GpcrStructure />}
         />
         <Route path="/gpcr/:gpcr_id/bioactivity" element={<GpcrBioactivity />} />
+        <Route
+          path="/drug/:mol_id/targets"
+          element={<DrugTargets />}
+        />
         
 
       </Routes>

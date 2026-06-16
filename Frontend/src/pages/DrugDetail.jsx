@@ -56,34 +56,29 @@ export default function DrugDetail() {
 
             <p><b>TPSA:</b> {drug.tpsa}</p>
 
-            <h2>Targets</h2>
+            <h2>Explore This Drug</h2>
 
-            {targets.length === 0 ? (
-                <p>No target data available.</p>
-            ) : (
-                targets.map((target) => (
-                    <div
-                        key={target.gpcr_id}
-                        style={{
-                            border: "1px solid #ddd",
-                            padding: "8px",
-                            marginBottom: "8px"
-                        }}
-                    >
-                        <Link to={`/gpcr/${target.gpcr_id}`}>
-                            <b>{target.t_name}</b>
-                        </Link>
-
-                        <br />
-
-                        {target.entry_name}
-
-                        <br />
-
-                        Median pChEMBL: {target.median_pchembl}
-                    </div>
-                ))
-            )}
+            <Link
+                to={`/drug/${mol_id}/targets`}
+                style={{
+                    textDecoration: "none",
+                    color: "inherit"
+                }}
+            >
+                <div
+                    style={{
+                        border: "1px solid #444",
+                        borderRadius: "12px",
+                        padding: "20px",
+                        width: "250px",
+                        cursor: "pointer",
+                        marginBottom: "30px"
+                    }}
+                >
+                    <h3>Target GPCRs</h3>
+                    <p>View receptors targeted by this drug</p>
+                </div>
+            </Link>
 
             <h2>Bioactivity Records</h2>
 
