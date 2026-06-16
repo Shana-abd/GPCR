@@ -19,6 +19,7 @@ export default function GpcrDetail() {
         fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/drugs`)
             .then(res => res.json())
             .then(data => setDrugs(data));
+        
 
     }, [gpcr_id]);
 
@@ -85,6 +86,26 @@ export default function GpcrDetail() {
       color: "inherit"
     }}
   >
+  <Link
+    to={`/gpcr/${gpcr_id}/structure`}
+    style={{
+        textDecoration: "none",
+        color: "inherit"
+    }}
+  >
+    <div
+        style={{
+        border: "1px solid #444",
+        borderRadius: "12px",
+        padding: "20px",
+        width: "250px",
+        cursor: "pointer"
+    }}
+  >
+    <h3>Sequence & Structure</h3>
+    <p>View sequence and structural information</p>
+  </div>
+</Link>
     <div
       style={{
         border: "1px solid #444",

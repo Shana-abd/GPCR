@@ -136,7 +136,41 @@ def get_gpcr(gpcr_id: int):
     db.close()
 
     return row
+@app.get("/gpcr/{gpcr_id}/structure")
+def get_gpcr_structure(gpcr_id: int):
 
+    db = SessionLocal()
+
+    result = db.execute(
+        text("""
+        SELECT
+            s.seq_length,
+            s.mol_wt,
+            s.isoelectric_point,
+            s.aromaticity,
+            s.instability_index,
+            s.gravy,
+            s.charge_ph7,
+
+            st.tm_count,
+            st.has_dry,
+            st.has_npxxy
+
+        FROM gpcr_sequence s
+
+        LEFT JOIN gpcr_structure st
+            ON s.gpcr_id = st.gpcr_id
+
+        WHERE s.gpcr_id = :gpcr_id
+        """),
+        {"gpcr_id": gpcr_id}
+    )
+
+    row = result.mappings().first()
+
+    db.close()
+
+    return row
 @app.get("/gpcr/{gpcr_id}/drugs")
 def get_gpcr_drugs(gpcr_id: int):
 

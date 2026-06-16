@@ -10,6 +10,7 @@ import GpcrExpression from "./pages/GpcrExpression";
 import GpcrDrugs from "./pages/GpcrDrugs";
 import GpcrBioactivity from "./pages/GpcrBioactivity";
 import GpcrDetail from "./pages/GpcrDetail";
+import GpcrStructure from "./pages/GpcrStructure";
 
 function SearchPage() {
 
@@ -123,7 +124,12 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/gpcr/:gpcr_id/expression" element={<GpcrExpression />} />
         <Route path="/gpcr/:gpcr_id/drugs" element={<GpcrDrugs />} />
+        <Route
+          path="/gpcr/:gpcr_id/structure"
+          element={<GpcrStructure />}
+        />
         <Route path="/gpcr/:gpcr_id/bioactivity" element={<GpcrBioactivity />} />
+        
 
       </Routes>
 
