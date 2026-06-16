@@ -10,8 +10,6 @@ export default function GpcrDetail() {
 
     const [gpcr, setGpcr] = useState(null);
     const [drugs, setDrugs] = useState([]);
-    const [bioactivity, setBioactivity] = useState([]);
-    const [expression, setExpression] = useState([]);
     useEffect(() => {
 
         fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}`)
@@ -21,12 +19,7 @@ export default function GpcrDetail() {
         fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/drugs`)
             .then(res => res.json())
             .then(data => setDrugs(data));
-        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/bioactivity`)
-            .then((res) => res.json())
-            .then((data) => setBioactivity(data));
-        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/expression`)
-        .then((res) => res.json())
-        .then((data) => setExpression(data));
+
     }, [gpcr_id]);
 
     if (!gpcr) {
@@ -55,30 +48,58 @@ export default function GpcrDetail() {
             <h2>GPCR Information</h2>
             <h2>Explore This Receptor</h2>
 
-            <div className="gpcr-links">
+            <div
+                style={{
+                    display: "flex",
+                    gap: "20px",
+                    flexWrap: "wrap",
+                    marginTop: "20px"
+                }}
+            >
 
-                <Link to={`/gpcr/${gpcr_id}/expression`}>
-                    <div className="card">
-                        <h3>Expression Data</h3>
-                        <p>View tissue expression profiles</p>
-                    </div>
-                </Link>
+                <Link
+                    to={`/gpcr/${gpcr_id}/expression`}
+                    style={{
+                        textDecoration: "none",
+                        color: "inherit"
+                    }}
+                >
+                    <div
+                        style={{
+                            border: "1px solid #444",
+                            borderRadius: "12px",
+                            padding: "20px",
+                            width: "250px",
+                            cursor: "pointer"
+                        }}
+                    >
+      <h3>Expression Data</h3>
+      <p>View tissue expression profiles</p>
+    </div>
+  </Link>
 
-                <Link to={`/gpcr/${gpcr_id}/drugs`}>
-                    <div className="card">
-                        <h3>Drug Interactions</h3>
-                        <p>View associated drugs</p>
-                    </div>
-                </Link>
+  <Link
+    to={`/gpcr/${gpcr_id}/drugs`}
+    style={{
+      textDecoration: "none",
+      color: "inherit"
+    }}
+  >
+    <div
+      style={{
+        border: "1px solid #444",
+        borderRadius: "12px",
+        padding: "20px",
+        width: "250px",
+        cursor: "pointer"
+      }}
+    >
+      <h3>Drug Interactions</h3>
+      <p>View associated drugs</p>
+    </div>
+  </Link>
 
-                <Link to={`/gpcr/${gpcr_id}/bioactivity`}>
-                    <div className="card">
-                        <h3>Bioactivity Records</h3>
-                        <p>View experimental activity data</p>
-                    </div>
-                </Link>
-
-            </div>
+</div>
 
             <h3>Data Sources</h3>
 
