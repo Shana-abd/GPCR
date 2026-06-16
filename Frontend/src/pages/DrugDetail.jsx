@@ -11,6 +11,7 @@ export default function DrugDetail() {
     const [targets, setTargets] = useState([]);
     const [bioactivity, setBioactivity] = useState([]);
     const [showSideEffects, setShowSideEffects] = useState(false);
+    const [showBioactivity, setShowBioactivity] = useState(false);
 
     useEffect(() => {
 
@@ -81,31 +82,78 @@ export default function DrugDetail() {
 
             <h2>Bioactivity Records</h2>
 
-            <table>
+            <div
+                onClick={() => setShowBioactivity(!showBioactivity)}
+                style={{
+                    border: "1px solid #444",
+                    borderRadius: "12px",
+                    padding: "15px",
+                    cursor: "pointer",
+                    marginBottom: "15px",
+                    fontWeight: "bold"
+                }}
+            >
+                📊 {showBioactivity ? "Hide" : "View"} Bioactivity Records ({bioactivity.length})
+            </div>
+
+            {showBioactivity && (
+
+            <table
+                style={{
+                    width: "100%",
+                    borderCollapse: "collapse"
+                }}
+            >
                 <thead>
                     <tr>
-                        <th>GPCR</th>
-                        <th>Action</th>
-                        <th>Type</th>
-                        <th>Value</th>
-                        <th>Units</th>
-                        <th>pChEMBL</th>
+                        <th style={{ padding: "12px", textAlign: "left" }}>GPCR</th>
+                        <th style={{ padding: "12px", textAlign: "left" }}>Action</th>
+                        <th style={{ padding: "12px", textAlign: "left" }}>Type</th>
+                        <th style={{ padding: "12px", textAlign: "left" }}>Value</th>
+                        <th style={{ padding: "12px", textAlign: "left" }}>Units</th>
+                        <th style={{ padding: "12px", textAlign: "left" }}>pChEMBL</th>
                     </tr>
                 </thead>
 
                 <tbody>
+
                     {bioactivity.map((row) => (
+
                         <tr key={row.bioactivity_id}>
-                            <td>{row.t_name}</td>
-                            <td>{row.action_type}</td>
-                            <td>{row.std_type}</td>
-                            <td>{row.std_value}</td>
-                            <td>{row.std_units}</td>
-                            <td>{row.pchembl_value}</td>
+
+                            <td style={{ padding: "10px 12px" }}>
+                                {row.t_name}
+                            </td>
+
+                            <td style={{ padding: "10px 12px" }}>
+                                {row.action_type}
+                            </td>
+
+                            <td style={{ padding: "10px 12px" }}>
+                                {row.std_type}
+                            </td>
+
+                            <td style={{ padding: "10px 12px" }}>
+                                {row.std_value}
+                            </td>
+
+                            <td style={{ padding: "10px 12px" }}>
+                                {row.std_units}
+                            </td>
+
+                            <td style={{ padding: "10px 12px" }}>
+                                {row.pchembl_value}
+                            </td>
+
                         </tr>
+
                     ))}
+
                 </tbody>
+
             </table>
+
+            )}
 
             <h2>Side Effects</h2>
 
