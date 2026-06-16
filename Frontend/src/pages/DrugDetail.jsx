@@ -70,13 +70,13 @@ export default function DrugDetail() {
                         border: "1px solid #444",
                         borderRadius: "12px",
                         padding: "20px",
-                        width: "250px",
+                        marginBottom: "30px",
                         cursor: "pointer",
-                        marginBottom: "30px"
+                        width: "100%"
                     }}
                 >
-                    <h3>Target GPCRs</h3>
-                    <p>View receptors targeted by this drug</p>
+                    <h3>🧬 Target GPCRs</h3>
+                    <p>View all receptors targeted by this drug</p>
                 </div>
             </Link>
 
