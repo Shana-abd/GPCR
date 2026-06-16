@@ -142,11 +142,11 @@ export default function DrugDetail() {
                             marginBottom: "10px"
                         }}
                     >
-                        <b>{effect.event_name}</b>
+                        <b>{effect.term}</b>
 
                         <br />
 
-                        Weight: {effect.weight}
+                        Weight: {Number(effect.final_weight).toFixed(3)}
 
                         <br />
 
@@ -154,7 +154,7 @@ export default function DrugDetail() {
 
                         <br />
 
-                        Sources: {effect.source_count}
+                        Sources: {effect.n_sources}
                     </div>
                 ))}
 
