@@ -20,17 +20,15 @@ function SearchPage() {
   useEffect(() => {
 
     if (query.length < 2) {
-        setResults([]);
-        return;
+      setResults([]);
+      return;
     }
 
     fetch(`https://gpcr.onrender.com/search?q=${query}`)
-        .then(res => res.json())
-        .then(data => setResults(data));
+      .then(res => res.json())
+      .then(data => setResults(data));
 
   }, [query]);
-
-
 
   return (
     <div style={{ padding: "40px" }}>
@@ -38,24 +36,24 @@ function SearchPage() {
 
       <h1>GPCR Database</h1>
 
-
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search receptor, synonym, or ChEMBL ID..."
+        placeholder="Search receptor, drug, synonym, or ChEMBL ID..."
       />
 
-
       <hr />
+
       {results.length > 0 && (
-      <p>
-        Found {results.length} receptor(s)
-      </p>
-    )}
+        <p>
+          Found {results.length} result(s)
+        </p>
+      )}
 
       {query.length >= 2 && results.length === 0 && (
-      <p>No receptors found.</p>
-    )}
+        <p>No results found.</p>
+      )}
+
       {results.map((r) => (
         <div
           key={`${r.result_type}-${r.id}`}
@@ -108,6 +106,9 @@ function SearchPage() {
         </div>
       ))}
 
+    </div>
+  );
+}
 export default function App() {
 
   return (
