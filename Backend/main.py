@@ -366,6 +366,35 @@ def get_gpcr_bioactivity(gpcr_id: int):
     db.close()
 
     return rows
+@app.get("/gpcr/{gpcr_id}/expression")
+def get_expression(gpcr_id: int):
+
+    db = SessionLocal()
+
+    result = db.execute(
+        text("""
+        SELECT
+            t.tissue_name,
+            e.median_tpm
+
+        FROM expression_gtex e
+
+        JOIN tissue t
+            ON e.tissue_id = t.tissue_id
+
+        WHERE e.gpcr_id = :gpcr_id
+          AND e.median_tpm > 0
+
+        ORDER BY e.median_tpm DESC
+        """),
+        {"gpcr_id": gpcr_id}
+    )
+
+    rows = result.mappings().all()
+
+    db.close()
+
+    return rows
 @app.get("/assay/{assay_id}")
 def get_assay(assay_id: int):
 

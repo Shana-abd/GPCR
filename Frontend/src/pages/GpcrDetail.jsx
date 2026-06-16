@@ -10,6 +10,7 @@ export default function GpcrDetail() {
     const [gpcr, setGpcr] = useState(null);
     const [drugs, setDrugs] = useState([]);
     const [bioactivity, setBioactivity] = useState([]);
+    const [expression, setExpression] = useState([]);
     useEffect(() => {
 
         fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}`)
@@ -22,6 +23,9 @@ export default function GpcrDetail() {
         fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/bioactivity`)
             .then((res) => res.json())
             .then((data) => setBioactivity(data));
+        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/expression`)
+        .then((res) => res.json())
+        .then((data) => setExpression(data));
     }, [gpcr_id]);
 
     if (!gpcr) {
@@ -75,6 +79,25 @@ export default function GpcrDetail() {
                 <b>Brain Specificity Score:</b>{" "}
                 {gpcr.brain_specificity_score ?? "N/A"}
             </p>
+            <h2>Expression Across Tissues</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tissue</th>
+                        <th>Median TPM</th>
+                    </tr>
+                </thead>
+
+            <tbody>
+                {expression.map((row, idx) => (
+                    <tr key={idx}>
+                        <td>{row.tissue_name}</td>
+                        <td>{Number(row.median_tpm).toFixed(2)}</td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
 
 
             <h2>Targeting Drugs</h2>
