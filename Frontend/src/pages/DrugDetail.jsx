@@ -128,35 +128,25 @@ export default function DrugDetail() {
             >
                 🩺 View Side Effects ({sideEffects.length})
             </div>
+
             {showSideEffects && (
+
                 <div>
 
                     {sideEffects.map((effect, idx) => (
-                        <div key={idx}>
-                            {effect.event_name}
-                        </div>
-                    ))}
-
-                </div>
-            )}
-
-            {sideEffects.length === 0 ? (
-                <p>No side effect data available.</p>
-            ) : (
-                sideEffects.map((effect) => (
                     <div
-                        key={effect.side_effect_id}
+                        key={idx}
                         style={{
                             border: "1px solid #ddd",
-                            padding: "8px",
-                            marginBottom: "8px"
+                            padding: "12px",
+                            marginBottom: "10px"
                         }}
                     >
-                        <b>{effect.term}</b>
+                        <b>{effect.event_name}</b>
 
                         <br />
 
-                        Weight: {effect.final_weight}
+                        Weight: {effect.weight}
 
                         <br />
 
@@ -164,11 +154,13 @@ export default function DrugDetail() {
 
                         <br />
 
-                        Sources: {effect.n_sources}
+                        Sources: {effect.source_count}
                     </div>
-                ))
-            )}
+                ))}
 
+            </div>
+
+        )}
         </div>
     );
 }
