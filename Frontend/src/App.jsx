@@ -6,7 +6,9 @@ import Navbar from "./components/NavBar";
 import About from "./pages/About";
 import Documentation from "./pages/Documentation";
 import GpcrBrowser from "./pages/GpcrBrowser";
-
+import GpcrExpression from "./pages/GpcrExpression";
+import GpcrDrugs from "./pages/GpcrDrugs";
+import GpcrBioactivity from "./pages/GpcrBioactivity";
 import GpcrDetail from "./pages/GpcrDetail";
 
 function SearchPage() {
@@ -119,6 +121,9 @@ export default function App() {
           element={<GpcrBrowser />}
         />
         <Route path="/about" element={<About />} />
+        <Route path="/gpcr/:gpcr_id/expression" element={<GpcrExpression />} />
+        <Route path="/gpcr/:gpcr_id/drugs" element={<GpcrDrugs />} />
+        <Route path="/gpcr/:gpcr_id/bioactivity" element={<GpcrBioactivity />} />
 
       </Routes>
 

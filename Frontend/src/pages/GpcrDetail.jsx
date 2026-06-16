@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Navbar from "../components/NavBar";
 
+
 export default function GpcrDetail() {
 
     const { gpcr_id } = useParams();
@@ -52,81 +53,32 @@ export default function GpcrDetail() {
 
            
             <h2>GPCR Information</h2>
+            <h2>Explore This Receptor</h2>
 
-            <h2>Expression</h2>
+            <div className="gpcr-links">
 
-            <p>
-                <b>Highest Whole Body Expression:</b>{" "}
-                {gpcr.wholebody_max_tissue || "N/A"}
-            </p>
+                <Link to={`/gpcr/${gpcr_id}/expression`}>
+                    <div className="card">
+                        <h3>Expression Data</h3>
+                        <p>View tissue expression profiles</p>
+                    </div>
+                </Link>
 
-            <p>
-                <b>Whole Body TPM:</b>{" "}
-                {gpcr.wholebody_max_tpm ?? "N/A"}
-            </p>
+                <Link to={`/gpcr/${gpcr_id}/drugs`}>
+                    <div className="card">
+                        <h3>Drug Interactions</h3>
+                        <p>View associated drugs</p>
+                    </div>
+                </Link>
 
-            <p>
-                <b>Highest Brain Expression:</b>{" "}
-                {gpcr.brain_max_region || "N/A"}
-            </p>
+                <Link to={`/gpcr/${gpcr_id}/bioactivity`}>
+                    <div className="card">
+                        <h3>Bioactivity Records</h3>
+                        <p>View experimental activity data</p>
+                    </div>
+                </Link>
 
-            <p>
-                <b>Brain TPM:</b>{" "}
-                {gpcr.brain_max_tpm ?? "N/A"}
-            </p>
-
-            <p>
-                <b>Brain Specificity Score:</b>{" "}
-                {gpcr.brain_specificity_score ?? "N/A"}
-            </p>
-            <h2>Expression Across Tissues</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tissue</th>
-                        <th>Median TPM</th>
-                    </tr>
-                </thead>
-
-            <tbody>
-                {expression.map((row, idx) => (
-                    <tr key={idx}>
-                        <td>{row.tissue_name}</td>
-                        <td>{Number(row.median_tpm).toFixed(2)}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-
-
-            <h2>Targeting Drugs</h2>
-
-            {drugs.map((drug) => (
-                <div
-                    key={drug.mol_id}
-                    style={{
-                        border: "1px solid #ddd",
-                        padding: "10px",
-                        marginBottom: "10px"
-                    }}
-                >
-                    <b>
-                        <Link to={`/drug/${drug.mol_id}`}>
-                            {drug.mol_name || drug.mol_id}
-                        </Link>
-                    </b>
-                    
-                    
-                    <br />
-
-                    Median pChEMBL: {drug.median_pchembl}
-
-                    <br />
-
-                    Action: {drug.action_types}
-                </div>
-            ))}
+            </div>
 
             <h3>Data Sources</h3>
 
