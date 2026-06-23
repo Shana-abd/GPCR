@@ -19,7 +19,7 @@ export default function DrugDetail() {
             .then(res => res.json())
             .then(data => setDrug(data));
 
-        fetch(`.../sideeffects`)
+        fetch(`https://gpcr.onrender.com/drug/${mol_id}/sideeffects`)
             .then(res => res.json())
             .then(data => {
                 console.log("SIDE EFFECT DATA:", data);
