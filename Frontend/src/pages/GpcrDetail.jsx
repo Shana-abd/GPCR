@@ -26,17 +26,29 @@ export default function GpcrDetail() {
 
             <h1>{gpcr.t_name}</h1>
 
-            <p><b>Entry Name:</b> {gpcr.entry_name}</p>
+            {gpcr.entry_name && (
+                <p><b>Entry Name:</b> {gpcr.entry_name}</p>
+            )}
 
-            <p><b>Class:</b> {gpcr.receptor_class}</p>
+            {gpcr.receptor_class && (
+                <p><b>Class:</b> {gpcr.receptor_class}</p>
+            )}
 
-            <p><b>Family:</b> {gpcr.receptor_family}</p>
+            {gpcr.receptor_family && (
+                <p><b>Family:</b> {gpcr.receptor_family}</p>
+            )}
 
-            <p><b>UniProt:</b> {gpcr.uniprot_id}</p>
+            {gpcr.uniprot_id && (
+                <p><b>UniProt:</b> {gpcr.uniprot_id}</p>
+            )}
 
-            <p><b>Ensembl:</b> {gpcr.ensembl_gene_id}</p>
+            {gpcr.ensembl_gene_id && (
+                <p><b>Ensembl:</b> {gpcr.ensembl_gene_id}</p>
+            )}
 
-            <p><b>Sequence Length:</b> {gpcr.seq_length}</p>
+            {gpcr.seq_length != null && (
+                <p><b>Sequence Length:</b> {gpcr.seq_length}</p>
+            )}
 
             <h2
                 style={{

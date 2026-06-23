@@ -26,7 +26,7 @@ export default function About() {
                 <li>805 GPCRs</li>
                 <li>330,562 molecules</li>
                 <li>592,361 drug-GPCR interactions</li>
-                <li>12,758 side effects</li>
+                <li>9,465 side effects</li>
             </ul>
 
             <h2>Data Sources and Contributions</h2>

@@ -21,10 +21,7 @@ export default function DrugDetail() {
 
         fetch(`https://gpcr.onrender.com/drug/${mol_id}/sideeffects`)
             .then(res => res.json())
-            .then(data => {
-                console.log("SIDE EFFECT DATA:", data);
-                setSideEffects(data);
-            });
+            .then(data => setSideEffects(data));
 
         fetch(`https://gpcr.onrender.com/drug/${mol_id}/targets`)
             .then(res => res.json())
@@ -49,16 +46,25 @@ export default function DrugDetail() {
             <h2>Drug Information</h2>
 
             <p><b>ChEMBL ID:</b> {drug.mol_id}</p>
+            {drug.drugbank_id && (
+                <p><b>DrugBank ID:</b> {drug.drugbank_id}</p>
+            )}
 
-            <p><b>DrugBank ID:</b> {drug.drugbank_id}</p>
+            {drug.approval_status && (
+                <p><b>Approval:</b> {drug.approval_status}</p>
+            )}
 
-            <p><b>Approval:</b> {drug.approval_status}</p>
+            {drug.mol_wt != null && (
+                <p><b>Molecular Weight:</b> {drug.mol_wt}</p>
+            )}
 
-            <p><b>Molecular Weight:</b> {drug.mol_wt}</p>
+            {drug.logp != null && (
+                <p><b>LogP:</b> {drug.logp}</p>
+            )}
 
-            <p><b>LogP:</b> {drug.logp}</p>
-
-            <p><b>TPSA:</b> {drug.tpsa}</p>
+            {drug.tpsa != null && (
+                <p><b>TPSA:</b> {drug.tpsa}</p>
+            )}
 
             <h2>Explore This Drug</h2>
 

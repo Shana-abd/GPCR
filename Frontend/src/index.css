@@ -109,3 +109,44 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+.feature-section {
+  margin-top: 60px;
+}
+
+.feature-section h2 {
+  margin-bottom: 30px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.feature-card {
+  border: 1px solid #2E3A35;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: left;
+  background: rgba(255,255,255,0.02);
+}
+
+.feature-card h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  line-height: 1.6;
+  opacity: 0.85;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  opacity: 0.8;
+}

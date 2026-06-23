@@ -81,24 +81,48 @@ function SearchPage() {
           <span>805 GPCRs</span>
           <span>330,562 Molecules</span>
           <span>592,361 Interactions</span>
-          <span>12,758 Side Effects</span>
+          <span>9,465 Side Effects</span>
         </div>
+        <div className="feature-section">
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "20px",
-            marginBottom: "50px"
-          }}
-        >
-          <Link to="/gpcrs">
-            Browse GPCRs
-          </Link>
+          <h2>What can you explore?</h2>
 
-          <Link to="/stats">
-            Statistics
-          </Link>
+          <div className="feature-grid">
+
+            <div className="feature-card">
+              <h3>🧬 GPCRs</h3>
+              <p>
+                Browse receptor classes, families, ligands,
+                structures and tissue expression profiles.
+              </p>
+            </div>
+
+            <div className="feature-card">
+              <h3>💊 Drugs</h3>
+              <p>
+                Explore GPCR-targeting molecules, bioactivity
+                records and target interactions.
+              </p>
+            </div>
+
+            <div className="feature-card">
+              <h3>🩺 Side Effects</h3>
+              <p>
+                Investigate adverse events with fine, mid and
+                coarse hierarchy classifications.
+              </p>
+            </div>
+
+            <div className="feature-card">
+              <h3>📊 Expression</h3>
+              <p>
+                View tissue-specific GPCR expression data
+                across multiple organs and tissues.
+              </p>
+            </div>
+
+          </div>
+
         </div>
 
       </div>
