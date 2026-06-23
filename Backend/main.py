@@ -154,30 +154,42 @@ def get_gpcr(gpcr_id: int):
 @app.get("/sideeffect_columns")
 def sideeffect_columns():
 
-    db = SessionLocal()
+    try:
+        db = SessionLocal()
 
-    result = db.execute(text("""
-        SELECT column_name
-        FROM information_schema.columns
-        WHERE table_name = 'side_effect'
-        ORDER BY ordinal_position
-    """))
+        result = db.execute(text("""
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_name = 'side_effect'
+            ORDER BY ordinal_position
+        """))
 
-    cols = [row[0] for row in result]
+        cols = [row[0] for row in result]
 
-    db.close()
+        db.close()
 
-    return cols
+        return cols
+
+    except Exception as e:
+        return {"error": str(e)}
 @app.get("/dbcheck")
 def dbcheck():
 
-    db = SessionLocal()
+    try:
+        db = SessionLocal()
 
-    result = db.execute(
-        text("SELECT current_database();")
-    )
+        result = db.execute(
+            text("SELECT current_database();")
+        )
 
-    return result.fetchone()
+        row = result.fetchone()
+
+        db.close()
+
+        return {"database": str(row[0])}
+
+    except Exception as e:
+        return {"error": str(e)}
 @app.get("/gpcr/{gpcr_id}/structure")
 def get_gpcr_structure(gpcr_id: int):
 
