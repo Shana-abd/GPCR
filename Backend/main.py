@@ -151,6 +151,23 @@ def get_gpcr(gpcr_id: int):
     db.close()
 
     return row
+@app.get("/sideeffect_columns")
+def sideeffect_columns():
+
+    db = SessionLocal()
+
+    result = db.execute(text("""
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_name = 'side_effect'
+        ORDER BY ordinal_position
+    """))
+
+    cols = [row[0] for row in result]
+
+    db.close()
+
+    return cols
 @app.get("/dbcheck")
 def dbcheck():
 
