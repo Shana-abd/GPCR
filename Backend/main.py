@@ -151,6 +151,16 @@ def get_gpcr(gpcr_id: int):
     db.close()
 
     return row
+@app.get("/dbcheck")
+def dbcheck():
+
+    db = SessionLocal()
+
+    result = db.execute(
+        text("SELECT current_database();")
+    )
+
+    return result.fetchone()
 @app.get("/gpcr/{gpcr_id}/structure")
 def get_gpcr_structure(gpcr_id: int):
 
