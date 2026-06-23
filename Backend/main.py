@@ -263,24 +263,20 @@ def get_drug_sideeffects(mol_id: str):
 
     result = db.execute(
         text("""
-        SELECT
-            se.side_effect_id,
-            se.term,
+            SELECT
+                se.term,
+                se.mid_label,
+                se.coarse_label,
+                dse.final_weight,
+                dse.confidence,
+                dse.n_sources
+            FROM drug_side_effect dse
+            JOIN side_effect se
+                ON dse.side_effect_id = se.side_effect_id
+            WHERE dse.mol_id = :mol_id
+            ORDER BY dse.final_weight DESC
 
-            dse.final_weight,
-            dse.confidence,
-            dse.n_sources
-
-        FROM drug_side_effect dse
-
-        JOIN side_effect se
-            ON dse.side_effect_id = se.side_effect_id
-
-        WHERE dse.mol_id = :mol_id
-
-        ORDER BY dse.final_weight DESC
-
-        LIMIT 50
+        
         """),
         {"mol_id": mol_id}
     )
