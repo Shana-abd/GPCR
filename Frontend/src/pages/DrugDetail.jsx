@@ -176,29 +176,35 @@ export default function DrugDetail() {
                 <div>
 
                     {sideEffects.map((effect, idx) => (
-                    <div
-                        key={idx}
-                        style={{
-                            border: "1px solid #ddd",
-                            padding: "12px",
-                            marginBottom: "10px"
-                        }}
-                    >
-                        <b>{effect.term}</b>
+                        <div
+                            key={idx}
+                            style={{
+                                border: "1px solid #ddd",
+                                padding: "12px",
+                                marginBottom: "10px",
+                                borderRadius: "8px"
+                            }}
+                        >
+                            <h4 style={{ marginBottom: "8px" }}>
+                                {effect.term}
+                            </h4>
 
-                        <br />
+                            <p style={{ color: "#666" }}>
+                                {effect.coarse_label} → {effect.mid_label}
+                            </p>
 
-                        Weight: {Number(effect.final_weight).toFixed(3)}
+                            <p>
+                                Confidence: {effect.confidence}
+                            </p>
+                            <p>
+                                 <b>Weight:</b> {effect.final_weight}
+                            </p>
 
-                        <br />
-
-                        Confidence: {effect.confidence}
-
-                        <br />
-
-                        Sources: {effect.n_sources}
-                    </div>
-                ))}
+                            <p>
+                                <b>Sources:</b> {effect.n_sources}
+                            </p>
+                        </div>
+                    ))}
 
             </div>
 
