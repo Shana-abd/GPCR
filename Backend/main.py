@@ -2,11 +2,14 @@ from fastapi import FastAPI
 from sqlalchemy import text
 from database import SessionLocal
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
+from prediction.prediction_service import predict_for_user
 app = FastAPI(
     title="GPCR Database API",
     version="1.0"
 )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -17,10 +20,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+class PredictionRequest(BaseModel):
+    gpcr_id: int
+    smiles: str
 
 @app.get("/")
 def home():
     return {"message": "GPCR Database API running"}
+@app.post("/predict")
+def predict(request: PredictionRequest):
+
+    return predict_for_user(
+        smiles=request.smiles,
+        gpcr_id=request.gpcr_id,
+        top_n=10
+    )
 
 
 @app.get("/gpcrs")
@@ -151,45 +165,7 @@ def get_gpcr(gpcr_id: int):
     db.close()
 
     return row
-@app.get("/sideeffect_columns")
-def sideeffect_columns():
 
-    try:
-        db = SessionLocal()
-
-        result = db.execute(text("""
-            SELECT column_name
-            FROM information_schema.columns
-            WHERE table_name = 'side_effect'
-            ORDER BY ordinal_position
-        """))
-
-        cols = [row[0] for row in result]
-
-        db.close()
-
-        return cols
-
-    except Exception as e:
-        return {"error": str(e)}
-@app.get("/dbcheck")
-def dbcheck():
-
-    try:
-        db = SessionLocal()
-
-        result = db.execute(
-            text("SELECT current_database();")
-        )
-
-        row = result.fetchone()
-
-        db.close()
-
-        return {"database": str(row[0])}
-
-    except Exception as e:
-        return {"error": str(e)}
 @app.get("/gpcr/{gpcr_id}/structure")
 def get_gpcr_structure(gpcr_id: int):
 
