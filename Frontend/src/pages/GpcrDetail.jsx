@@ -15,7 +15,7 @@ export default function GpcrDetail() {
 
     useEffect(() => {
 
-        fetch(`http://gpcr.onrender.com/gpcr/${gpcr_id}`)
+        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}`)
             .then(res => res.json())
             .then(data => setGpcr(data));
 
