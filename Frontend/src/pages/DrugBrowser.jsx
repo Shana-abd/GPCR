@@ -15,7 +15,7 @@ export default function DrugBrowser() {
 
             fetch(
                 
-                `http://127.0.0.1:8000/drugs?search=${encodeURIComponent(search)}`
+                `https://gpcr.onrender.com/drugs?search=${encodeURIComponent(search)}`
             )
                 .then(res => res.json())
                 .then(setDrugs);

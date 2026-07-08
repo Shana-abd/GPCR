@@ -9,7 +9,7 @@ export default function GpcrExpression() {
     const [expression, setExpression] = useState([]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/gpcr/${gpcr_id}/expression`)
+        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/expression`)
             .then(res => res.json())
             .then(data => setExpression(data));
     }, [gpcr_id]);
