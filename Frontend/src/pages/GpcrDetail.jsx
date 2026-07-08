@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import Navbar from "../components/NavBar";
+import {
+    Dna,
+    Activity,
+    Pill,
+    ArrowRight
+} from "lucide-react";
 
 export default function GpcrDetail() {
 
@@ -10,146 +15,284 @@ export default function GpcrDetail() {
 
     useEffect(() => {
 
-        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}`)
+        fetch(`http://127.0.0.1:8000/gpcr/${gpcr_id}`)
             .then(res => res.json())
             .then(data => setGpcr(data));
 
     }, [gpcr_id]);
 
-    if (!gpcr) {
-        return <div>Loading...</div>;
+    function toTitleCase(text) {
+
+        if (!text) return "-";
+
+        return text
+            .split(" ")
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+
     }
 
+    if (!gpcr) {
+
+        return <div>Loading...</div>;
+
+    }
+    console.log(gpcr);
+    console.log("Sequence:", gpcr.t_sequence);
+
+    const formattedSequence =
+        gpcr.t_sequence
+            ? gpcr.t_sequence.match(/.{1,195}/g).join("\n")
+            : "";
+        
+
     return (
-        <div style={{ padding: "40px" }}>
-            <Navbar />
 
-            <h1>{gpcr.t_name}</h1>
+        <div style={{ padding: "24px 40px 40px" }}>
 
-            {gpcr.entry_name && (
-                <p><b>Entry Name:</b> {gpcr.entry_name}</p>
-            )}
+            {/* ================= TOP BAR ================= */}
 
-            {gpcr.receptor_class && (
-                <p><b>Class:</b> {gpcr.receptor_class}</p>
-            )}
+            <div className="topbar">
 
-            {gpcr.receptor_family && (
-                <p><b>Family:</b> {gpcr.receptor_family}</p>
-            )}
+                <Link
+                    to="/"
+                    className="top-left"
+                >
 
-            {gpcr.uniprot_id && (
-                <p><b>UniProt:</b> {gpcr.uniprot_id}</p>
-            )}
+                    <span className="brand-logo">
+                        🧬
+                    </span>
 
-            {gpcr.ensembl_gene_id && (
-                <p><b>Ensembl:</b> {gpcr.ensembl_gene_id}</p>
-            )}
+                    <span className="brand-name">
+                        Home
+                    </span>
 
-            {gpcr.seq_length != null && (
-                <p><b>Sequence Length:</b> {gpcr.seq_length}</p>
-            )}
+                </Link>
 
-            <h2
-                style={{
-                    marginTop: "50px",
-                    marginBottom: "30px",
-                    textAlign: "center"
-                }}
-            >
-                Explore This Receptor
-            </h2>
+                <div className="top-right">
+
+                    <Link to="/about">
+                        About
+                    </Link>
+
+                    <Link to="/docs">
+                        Documentation
+                    </Link>
+
+                </div>
+
+            </div>
+
+            {/* ================= HERO ================= */}
 
             <div
                 style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "20px",
-                    marginTop: "20px",
-                    flexWrap: "wrap"
+                    textAlign: "center",
+                    marginTop: "40px",
+                    marginBottom: "40px"
                 }}
             >
 
-                <Link
-                    to={`/gpcr/${gpcr_id}/expression`}
-                    style={{
-                        textDecoration: "none",
-                        color: "inherit"
-                    }}
-                >
-                    <div
-                        style={{
-                            border: "1px solid #2E3A35",
-                            borderRadius: "12px",
-                            padding: "20px",
-                            width: "220px",
-                            height: "120px",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            cursor: "pointer"
-                        }}
-                    >
-                        <h3>Expression Data</h3>
-                        <p>View tissue expression profiles</p>
-                    </div>
-                </Link>
+                <h1 className="page-title">
+
+                    {toTitleCase(gpcr.t_name)}
+
+                </h1>
+
+                <span className="gpcr-badge">
+
+                    {gpcr.receptor_class}
+
+                </span>
+
+            </div>
+
+            {/* ================= OVERVIEW ================= */}
+
+            <div className="overview-card">
+
+                <h2>
+
+                    Overview
+
+                </h2>
+
+                <div className="overview-table">
+
+                    <div>Entry Name</div>
+                    <div>{toTitleCase(gpcr.entry_name || "-")}</div>
+
+                    <div>Family</div>
+                    <div>{gpcr.receptor_family || "-"}</div>
+
+                    <div>Ligand Type</div>
+                    <div>{gpcr.ligand_type || "-"}</div>
+
+                    <div>Alternative Names</div>
+                    <div>{gpcr.alt_names || "-"}</div>
+
+                    <div>UniProt</div>
+                    <div>{gpcr.uniprot_id || "-"}</div>
+
+                    <div>Ensembl</div>
+                    <div>{gpcr.ensembl_gene_id || "-"}</div>
+
+                    <div>Sequence Length</div>
+                    <div>{gpcr.seq_length || "-"} aa</div>
+
+                </div>
+
+            </div>
+
+            {/* ================= MODULES ================= */}
+
+            <h2
+                style={{
+                    textAlign: "center",
+                    marginTop: "60px",
+                    marginBottom: "30px",
+                    fontSize:"32px"
+                }}
+            >
+
+                Explore This Receptor
+
+            </h2>
+
+            <div className="gpcr-modules">
 
                 <Link
-                    to={`/gpcr/${gpcr_id}/structure`}
-                    style={{
-                        textDecoration: "none",
-                        color: "inherit"
-                    }}
+                    to={`/gpcr/${gpcr_id}/expression`}
+                    className="module-link"
                 >
-                    <div
-                        style={{
-                            border: "1px solid #2E3A35",
-                            borderRadius: "12px",
-                            padding: "20px",
-                            width: "220px",
-                            height: "120px",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            cursor: "pointer"
-                        }}
-                    >
-                        <h3>Sequence & Structure</h3>
-                        <p>View sequence and structural information</p>
+
+                    <div className="module-card">
+
+                        <div className="module-content">
+
+                            <div className="icon-box gpcr">
+
+                                <Activity size={28} />
+
+                            </div>
+
+                            <h3>
+
+                                Expression Data
+
+                            </h3>
+
+                            <p>
+
+                                Explore tissue expression profiles.
+
+                            </p>
+                        </div>
+
+                        <ArrowRight
+                            size={18}
+                            className="module-arrow"
+                        />
+
                     </div>
+
                 </Link>
 
                 <Link
                     to={`/gpcr/${gpcr_id}/drugs`}
-                    style={{
-                        textDecoration: "none",
-                        color: "inherit"
-                    }}
+                    className="module-link"
                 >
-                    <div
-                        style={{
-                            border: "1px solid #2E3A35",
-                            borderRadius: "12px",
-                            padding: "20px",
-                            width: "220px",
-                            height: "120px",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            cursor: "pointer"
-                        }}
-                    >
-                        <h3>Drug Interactions</h3>
-                        <p>View associated drugs</p>
+
+                    <div className="module-card">
+                        <div className="module-content">
+
+                            <div className="icon-box gpcr">
+
+                                <Pill size={28} />
+
+                            </div>
+
+                            <h3>
+
+                                Drug Interactions
+
+                            </h3>
+
+                            <p>
+
+                                Browse associated GPCR-targeting drugs.
+
+                            </p>
+                        </div>
+
+                        <ArrowRight
+                            size={18}
+                            className="module-arrow"
+                        />
+
                     </div>
+
                 </Link>
 
             </div>
+            <div className="sequence-section">
 
+                <div className="sequence-header">
+
+                    <h2 className="gpcr-page">
+
+                        Protein Sequence
+
+                    </h2>
+
+                    <button
+                        className="copy-btn"
+                        onClick={() => navigator.clipboard.writeText(gpcr.t_sequence || "")}
+                    >
+
+                        📋 Copy Sequence
+
+                    </button>
+
+                </div>
+
+                <pre className="sequence-box">
+
+                    {formattedSequence}
+
+                </pre>
+
+            </div>
+            <h2 className="gpcr-page">
+                Sequence Properties
+            </h2>
+
+            <div className="property-list">
+
+                <div>Sequence Length</div>
+                <div>{gpcr.seq_length} aa</div>
+
+               <div>Molecular Weight</div>
+                <div>{(gpcr.mol_wt / 1000).toFixed(2)} kDa</div>
+
+                <div>Isoelectric Point</div>
+                <div>{gpcr.isoelectric_point?.toFixed(2)}</div>
+
+                <div>Aromaticity</div>
+                <div>{gpcr.aromaticity?.toFixed(3)}</div>
+
+                <div>Instability Index</div>
+                <div>{gpcr.instability_index?.toFixed(2)}</div>
+
+                <div>GRAVY</div>
+                <div>{gpcr.gravy?.toFixed(3)}</div>
+
+                <div>Charge at pH 7</div>
+                <div>{gpcr.charge_ph7?.toFixed(2)}</div>
+
+            </div>
         </div>
+
     );
+
 }

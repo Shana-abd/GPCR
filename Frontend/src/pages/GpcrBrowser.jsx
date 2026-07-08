@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/NavBar";
+import { Dna, ArrowRight } from "lucide-react";
+
 
 export default function GpcrBrowser() {
 
@@ -15,73 +16,130 @@ export default function GpcrBrowser() {
 
     }, []);
 
+    const filteredGpcrs = gpcrs.filter((g) =>
+        g.t_name.toLowerCase().includes(filter.toLowerCase()) ||
+        g.entry_name.toLowerCase().includes(filter.toLowerCase())
+    );
     return (
+
         <div style={{ padding: "40px" }}>
 
-            <Navbar />
+            <div className="topbar">
 
-            <h1>Browse GPCRs</h1>
-            <input
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                placeholder="Filter GPCRs..."
-                style={{
-                    padding: "8px",
-                    width: "300px",
-                    marginBottom: "20px"
-                }}
-            />
-            <p>
-                Showing {
-                    gpcrs.filter((g) =>
-                        g.t_name.toLowerCase().includes(filter.toLowerCase()) ||
-                        g.entry_name.toLowerCase().includes(filter.toLowerCase())
-                    ).length
-                } of {gpcrs.length} GPCRs
-            </p>
-            <hr />
-
-            {gpcrs
-                .filter((g) =>
-                    g.t_name.toLowerCase().includes(filter.toLowerCase()) ||
-                    g.entry_name.toLowerCase().includes(filter.toLowerCase())
-                )
-                .map((g) => (
-
-                <div
-                    key={g.gpcr_id}
-                    style={{
-                        border: "1px solid #ddd",
-                        padding: "12px",
-                        marginBottom: "12px"
-                    }}
+                <Link
+                    to="/"
+                    className="top-left"
                 >
 
-                    <h3>
-                        <Link to={`/gpcr/${g.gpcr_id}`}>
-                            {g.t_name}
-                        </Link>
-                    </h3>
+                    <span className="brand-logo">
+                        🧬
+                    </span>
 
-                    <p>
-                        <b>Entry Name:</b> {g.entry_name}
-                    </p>
+                    <span className="brand-name">
+                        Home
+                    </span>
 
-                    <p>
-                        <b>Class:</b> {g.receptor_class}
-                    </p>
+                </Link>
 
-                    <p>
-                        <b>Family:</b> {g.receptor_family}
-                    </p>
+                <div className="top-right">
 
-                    <p>
-                        <b>Ligand Type:</b> {g.ligand_type}
-                    </p>
+                    <Link to="/about">
+                        About
+                    </Link>
+
+                    <Link to="/docs">
+                        Documentation
+                    </Link>
 
                 </div>
 
-            ))}
+            </div>
+
+            <div
+                style={{
+                    textAlign: "center",
+                    marginTop: "40px",
+                    marginBottom: "36px"
+                }}
+            >
+
+                <h1 className="page-title">
+                    Browse GPCRs
+                </h1>
+
+                <p className="page-subtitle">
+                    Explore receptor families, genes, ligands and tissue expression.
+                </p>
+
+                <input
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    placeholder="Search GPCR name, gene or family..."
+                    className="search-input"
+                />
+
+            </div>
+            <p
+                style={{
+                    marginBottom: "20px",
+                    color: "#9ca3af",
+                    fontSize: "16px"
+                }}
+            >
+                Showing {filteredGpcrs.length} of {gpcrs.length} GPCRs
+            </p>
+            <div className="gpcr-grid">
+
+                {filteredGpcrs.map((g) => (
+
+                    <div
+                        key={g.gpcr_id}
+                        className="gpcr-card"
+                    >
+
+                        <Link
+                            to={`/gpcr/${g.gpcr_id}`}
+                            className="gpcr-link"
+                        >
+
+                            <div className="gpcr-card-top">
+
+                                <div className="icon-box gpcr">
+
+                                    <Dna size={28} />
+
+                                </div>
+
+                                <ArrowRight size={18} />
+
+                            </div>
+
+                            <h3>
+
+                                {g.t_name}
+
+                            </h3>
+
+                            <p className="gpcr-entry">
+
+                                {g.entry_name}
+
+                            </p>
+
+                            <span className="gpcr-badge">
+
+                                {g.receptor_class}
+
+                            </span>
+
+                        </Link>
+
+                    </div>
+
+                ))}
+
+            </div>
+            
 
         </div>
     );

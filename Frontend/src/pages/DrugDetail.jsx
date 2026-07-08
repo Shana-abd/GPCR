@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo  } from "react";
 import { Link, useParams } from "react-router-dom";
-import Navbar from "../components/NavBar";
+
 
 export default function DrugDetail() {
 
@@ -12,6 +12,7 @@ export default function DrugDetail() {
     const [bioactivity, setBioactivity] = useState([]);
     const [showSideEffects, setShowSideEffects] = useState(false);
     const [showBioactivity, setShowBioactivity] = useState(false);
+    const [showTargets, setShowTargets] = useState(false);
 
     useEffect(() => {
 
@@ -32,64 +33,310 @@ export default function DrugDetail() {
             .then((data) => setBioactivity(data));
 
     }, [mol_id]);
+    const groupedSideEffects = useMemo(() => {
+
+        const grouped = {};
+
+        sideEffects.forEach(effect => {
+
+            if (!grouped[effect.coarse_label]) {
+
+                grouped[effect.coarse_label] = {};
+
+            }
+
+            if (!grouped[effect.coarse_label][effect.mid_label]) {
+
+                grouped[effect.coarse_label][effect.mid_label] = [];
+
+            }
+
+            grouped[effect.coarse_label][effect.mid_label].push(effect);
+
+        });
+
+        return grouped;
+
+    }, [sideEffects]);
 
     if (!drug) {
         return <div>Loading...</div>;
     }
+    const renderRow = (label, value) => {
+
+        if (
+            value === null ||
+            value === undefined ||
+            value === ""
+        ) return null;
+
+        return (
+            <>
+                <div>{label}</div>
+                <div>{value}</div>
+            </>
+        );
+
+    };
+    const hasOverview =
+        drug.type ||
+        drug.action_types ||
+        drug.approval_status ||
+        drug.drugbank_id ||
+        drug.pubchem_cid;
+
+    const hasProperties =
+        drug.mol_wt != null ||
+        drug.logp != null ||
+        drug.tpsa != null ||
+        drug.hba != null ||
+        drug.hbd != null ||
+        drug.rotatable_bonds != null ||
+        drug.heavy_atom_count != null ||
+        drug.frac_csp3 != null ||
+        drug.aromatic_rings != null ||
+        drug.qed != null ||
+        drug.lipinskiviolations != null ||
+        drug.isdruglike != null;
+
+    const hasSummary =
+        drug.n_bioactivity_records ||
+        drug.n_assays ||
+        drug.max_pchembl ||
+        drug.mean_pchembl ||
+        drug.median_pchembl;
+
+    const showAction = bioactivity.some(
+        r => r.action_type
+    );
+
+    const showPhase = bioactivity.some(
+        r => r.max_phase != null
+    );
+
+    const showPchembl = bioactivity.some(
+        r => r.pchembl_value != null
+    );
+    console.log(sideEffects);
 
     return (
         <div style={{ padding: "40px" }}>
 
-            <Navbar />
-
-            <h1>{drug.mol_name || drug.mol_id}</h1>
-            <h2>Drug Information</h2>
-
-            <p><b>ChEMBL ID:</b> {drug.mol_id}</p>
-            {drug.drugbank_id && (
-                <p><b>DrugBank ID:</b> {drug.drugbank_id}</p>
-            )}
-
-            {drug.approval_status && (
-                <p><b>Approval:</b> {drug.approval_status}</p>
-            )}
-
-            {drug.mol_wt != null && (
-                <p><b>Molecular Weight:</b> {drug.mol_wt}</p>
-            )}
-
-            {drug.logp != null && (
-                <p><b>LogP:</b> {drug.logp}</p>
-            )}
-
-            {drug.tpsa != null && (
-                <p><b>TPSA:</b> {drug.tpsa}</p>
-            )}
-
-            <h2>Explore This Drug</h2>
-
             <Link
-                to={`/drug/${mol_id}/targets`}
-                style={{
-                    textDecoration: "none",
-                    color: "inherit",
-                    display: "block"
-                }}
+
+                to="/drugs"
+
+                className="back-link"
+
             >
-                <div
-                    style={{
-                        border: "1px solid #2E3A35",
-                        borderRadius: "12px",
-                        padding: "15px",
-                        marginBottom: "30px",
-                        fontWeight: "bold"
-                    }}
-                >
-                    🧬 View Target GPCRs ({targets.length})
-                </div>
+
+                ← Back to Drug Browser
+
             </Link>
 
-            <h2>Bioactivity Records</h2>
+            <h1>
+
+                {drug.mol_name
+                    ? drug.mol_name
+                    : drug.mol_id}
+
+            </h1>
+
+            {drug.mol_name && (
+
+                <p className="page-subtitle">
+
+                    {drug.mol_id}
+
+                </p>
+
+            )}
+            {hasOverview && (
+                 <>
+
+                    <h2 className="subsection-title">
+
+                        Drug Overview
+
+                    </h2>
+
+                    <div className="property-list">
+
+                        {renderRow("Type", drug.type)}
+
+                        {renderRow("Mechanism", drug.action_types)}
+
+                        {renderRow("Approval Status", drug.approval_status)}
+
+                        {renderRow("DrugBank ID", drug.drugbank_id)}
+
+                        {renderRow("PubChem CID", drug.pubchem_cid)}
+                
+
+                    </div>
+                </>
+
+            )}    
+            {hasProperties && (
+                 <>
+                    <h2 className="subsection-title">
+
+                        Physicochemical Properties
+
+                    </h2>
+                    <div className="property-list">
+
+                        {renderRow(
+                            "Molecular Weight",
+                            drug.mol_wt ? `${Number(drug.mol_wt).toFixed(2)} Da` : null
+                        )}
+
+                        {renderRow(
+                            "LogP",
+                            drug.logp ? Number(drug.logp).toFixed(2) : null
+                        )}
+                        {renderRow(
+                            "TPSA",
+                            drug.tpsa != null
+                            ? `${Number(drug.tpsa).toFixed(1)} Å²`
+                            : null
+                        )}
+
+                        {renderRow("HBA", drug.hba)}
+
+                        {renderRow("HBD", drug.hbd)}
+
+                        {renderRow("Rotatable Bonds", drug.rotatable_bonds)}
+
+                        {renderRow("Heavy Atom Count", drug.heavy_atom_count)}
+
+                        {renderRow(
+                            "Fraction Csp3",
+                            drug.frac_csp3 != null
+                            ? Number(drug.frac_csp3).toFixed(3)
+                            : null
+                        )}
+
+                        {renderRow("Aromatic Rings", drug.aromatic_rings)}
+
+                        {renderRow(
+                            "QED",
+                            drug.qed ? Number(drug.qed).toFixed(3) : null
+                        )}
+
+                        {renderRow("Lipinski Violations", drug.lipinskiviolations)}
+
+                        {renderRow(
+                            "Drug-like",
+                            drug.isdruglike == null
+                            ? null
+                            : (drug.isdruglike ? "Yes" : "No")
+                        )}
+
+                    </div>
+                </>
+            )}        
+            
+            {hasSummary && (
+                 <>
+                    <h2 className="subsection-title">
+
+                        Database Summary
+
+                    </h2>
+
+                    <div className="property-list">
+
+                        {renderRow("Bioactivity Records", drug.n_bioactivity_records)}
+
+                        {renderRow("Assays", drug.n_assays)}
+
+                        {renderRow("Maximum pChEMBL", drug.max_pchembl)}
+
+                        {renderRow("Mean pChEMBL", drug.mean_pchembl)}
+
+                        {renderRow("Median pChEMBL", drug.median_pchembl)} 
+                    </div>
+                </>
+            )}
+
+            <h2 className="subsection-title">
+
+                Explore This Drug
+
+            </h2>
+
+            <div
+                onClick={() => setShowTargets(!showTargets)}
+                style={{
+                    border: "1px solid #2E3A35",
+                    borderRadius: "12px",
+                    padding: "15px",
+                    cursor: "pointer",
+                    marginBottom: "15px",
+                    fontWeight: "bold"
+                }}
+            >           
+                🧬 {showTargets ? "Hide" : "View"} Target GPCRs ({targets.length})
+            </div>
+            {showTargets && (
+
+                <div className="target-grid">
+
+                    {targets.map((target) => (
+
+                        <Link
+                            key={target.gpcr_id}
+                            to={`/gpcr/${target.gpcr_id}`}
+                            className="target-card"
+                        >
+
+                            <h3>
+
+                                {target.t_name}
+
+                            </h3>
+
+                            {target.entry_name && (
+
+                                <p className="target-entry">
+
+                                    {target.entry_name}
+
+                                </p>
+
+                            )}
+
+                            {target.median_pchembl != null && (
+
+                                <div className="target-pchembl">
+
+                                    Median pChEMBL
+
+                                    <span>
+
+                                        {Number(target.median_pchembl).toFixed(2)}
+
+                                    </span>
+
+                                </div>
+
+                            )}
+
+                            <div className="target-arrow">
+
+                                →
+
+                            </div>
+
+                        </Link>
+
+                    ))}
+
+                </div>
+
+            )}
+            
 
             <div
                 onClick={() => setShowBioactivity(!showBioactivity)}
@@ -98,7 +345,7 @@ export default function DrugDetail() {
                     borderRadius: "12px",
                     padding: "15px",
                     cursor: "pointer",
-                    marginBottom: "15px",
+                    marginBottom: "50px",
                     fontWeight: "bold"
                 }}
             >
@@ -108,51 +355,133 @@ export default function DrugDetail() {
             {showBioactivity && (
 
             <table
-                style={{
-                    width: "100%",
-                    borderCollapse: "collapse"
-                }}
+                className="bioactivity-table"
             >
-                <thead>
-                    <tr>
-                        <th style={{ padding: "12px", textAlign: "left" }}>GPCR</th>
-                        <th style={{ padding: "12px", textAlign: "left" }}>Action</th>
-                        <th style={{ padding: "12px", textAlign: "left" }}>Type</th>
-                        <th style={{ padding: "12px", textAlign: "left" }}>Value</th>
-                        <th style={{ padding: "12px", textAlign: "left" }}>Units</th>
-                        <th style={{ padding: "12px", textAlign: "left" }}>pChEMBL</th>
+                <thead className="bioactivity-head">
+                    <tr className="bioactivity-head-row">
+
+                        <th className="bioactivity-heading">
+
+                            GPCR
+
+                        </th>
+
+                        <th className="bioactivity-heading">
+
+                            Activity
+
+                        </th>
+
+                        {showAction && (
+
+                            <th className="bioactivity-heading">
+
+                                Action
+
+                            </th>
+
+                        )}
+
+                        {showPhase && (
+
+                            <th className="bioactivity-heading">
+
+                                Phase
+
+                            </th>
+
+                        )}
+
+                        {showPchembl && (
+
+                            <th className="bioactivity-heading">
+
+                                pChEMBL
+
+                            </th>
+
+                        )}
+
                     </tr>
+
                 </thead>
 
-                <tbody>
 
-                    {bioactivity.map((row) => (
+                <tbody className="bioactivity-body">
 
-                        <tr key={row.bioactivity_id}>
+                    {bioactivity.map((record) => (
 
-                            <td style={{ padding: "10px 12px" }}>
-                                {row.t_name}
+                        <tr 
+                            key={record.bioactivity_id}
+                            className="bioactivity-row"
+                        >
+
+                            <td className="bioactivity-cell">
+
+                                <Link
+                                    to={`/gpcr/${record.gpcr_id}`}
+                                    className="bioactivity-gpcr"
+                                >
+
+                                    {record.t_name}
+
+                                </Link>
+
                             </td>
 
-                            <td style={{ padding: "10px 12px" }}>
-                                {row.action_type}
+                            <td className="bioactivity-cell">
+
+                                <div className="activity-cell">
+
+                                    {record.std_type}
+                                    {" • "}
+
+                                    {record.std_relation || ""}
+
+                                    {" "}
+
+                                    {record.std_value}
+
+                                    {" nM"}
+
+                            
+
+                                </div>
+
                             </td>
 
-                            <td style={{ padding: "10px 12px" }}>
-                                {row.std_type}
-                            </td>
+                            {showAction && (
 
-                            <td style={{ padding: "10px 12px" }}>
-                                {row.std_value}
-                            </td>
+                                <td className="bioactivity-cell">
 
-                            <td style={{ padding: "10px 12px" }}>
-                                {row.std_units}
-                            </td>
+                                    {record.action_type || ""}
 
-                            <td style={{ padding: "10px 12px" }}>
-                                {row.pchembl_value}
-                            </td>
+                                </td>
+
+                            )}
+
+                           {showPhase && (
+
+                                <td className="bioactivity-cell">
+
+                                    {record.max_phase === 1 && "I"}
+                                    {record.max_phase === 2 && "II"}
+                                    {record.max_phase === 3 && "III"}
+                                    {record.max_phase === 4 && "IV"}
+
+                                </td>
+
+                            )}
+
+                            {showPchembl && (
+
+                                <td className="pchembl-value">
+
+                                    {record.pchembl_value != null &&
+                                        Number(record.pchembl_value).toFixed(2)}
+
+                                </td>
+                            )}
 
                         </tr>
 
@@ -174,7 +503,8 @@ export default function DrugDetail() {
                     padding: "15px",
                     cursor: "pointer",
                     marginBottom: "15px",
-                    fontWeight: "bold"
+                    fontWeight: "bold",
+                    marginTop: "20px"
                 }}
             >
                 🩺 View Side Effects ({sideEffects.length})
@@ -184,40 +514,73 @@ export default function DrugDetail() {
 
                 <div>
 
-                    {sideEffects.map((effect, idx) => (
+                    {Object.entries(groupedSideEffects).map(([coarse, mids]) => (
+
                         <div
-                            key={idx}
-                            style={{
-                                border: "1px solid #ddd",
-                                padding: "12px",
-                                marginBottom: "10px",
-                                borderRadius: "8px"
-                            }}
+                            key={coarse}
+                            className="coarse-group"
                         >
-                            <h4 style={{ marginBottom: "8px" }}>
-                                {effect.term}
-                            </h4>
 
-                            <p style={{ color: "#666" }}>
-                                {effect.coarse_label} → {effect.mid_label}
-                            </p>
+                            <h3 className="coarse-title">
 
-                            <p>
-                                Confidence: {effect.confidence}
-                            </p>
-                            <p>
-                                 <b>Weight:</b> {effect.final_weight}
-                            </p>
+                                {coarse.replaceAll("_", " ")}
 
-                            <p>
-                                <b>Sources:</b> {effect.n_sources}
-                            </p>
+                            </h3>
+
+                            {Object.entries(mids).map(([mid, effects]) => (
+
+                                <div
+                                    key={`${coarse}-${mid}`}
+                                    className="mid-group"
+                                >
+
+                                    <h4 className="mid-title">
+
+                                        {mid.replaceAll("_", " ")}
+
+                                    </h4>
+
+                                    <div className="effect-grid">
+
+                                        {effects.map((effect, index) => (
+
+                                            <div
+                                                key={`${effect.side_effect_id}-${index}`}
+                                                className="effect-card"
+                                            >
+
+                                                <div className="effect-name">
+
+                                                    {effect.term.replaceAll("_", " ")}
+
+                                                </div>
+
+                                                <div
+                                                    className={`confidence-pill ${effect.confidence
+                                                        .toLowerCase()
+                                                        .replace(" ", "-")}`}
+                                                >
+
+                                                    {effect.confidence}
+
+                                                </div>
+
+                                            </div>
+
+                                        ))}
+
+                                    </div>
+
+                                </div>
+
+                            ))}
+
                         </div>
+
                     ))}
 
-            </div>
+                </div>
 
-        )}
+            )}
         </div>
-    );
-}
+    )}

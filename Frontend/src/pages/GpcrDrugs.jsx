@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import Navbar from "../components/NavBar";
 
 export default function GpcrDrugs() {
 
@@ -17,35 +16,99 @@ export default function GpcrDrugs() {
     }, [gpcr_id]);
 
     return (
+
         <div style={{ padding: "40px" }}>
-            <Navbar />
 
-            <h1>Targeting Drugs</h1>
+            <Link
+                to={`/gpcr/${gpcr_id}`}
+                className="back-link"
+            >
+                ← Back to Receptor
+            </Link>
 
-            {drugs.map((drug) => (
-                <div
-                    key={drug.mol_id}
-                    style={{
-                        border: "1px solid #ddd",
-                        padding: "10px",
-                        marginBottom: "10px"
-                    }}
-                >
-                    <b>
-                        <Link to={`/drug/${drug.mol_id}`}>
-                            {drug.mol_name || drug.mol_id}
-                        </Link>
-                    </b>
+            <h1 className="page-title">
 
-                    <br />
+                Targeting Drugs
 
-                    Median pChEMBL: {drug.median_pchembl}
+            </h1>
 
-                    <br />
+            <p className="page-subtitle">
 
-                    Action: {drug.action_types}
-                </div>
-            ))}
+                Drugs reported to interact with this GPCR.
+
+            </p>
+
+            <div className="drug-list">
+
+                {drugs.map((drug) => (
+
+                    <div
+                        key={drug.mol_id}
+                        className="drug-card"
+                    >
+
+                        <div className="drug-header">
+
+                            <div>
+
+                                <Link
+                                    to={`/drug/${drug.mol_id}`}
+                                    className="drug-link"
+                                >
+
+                                    <h2 className="drug-title">
+
+                                        {drug.mol_name || drug.mol_id}
+
+                                    </h2>
+
+                                </Link>
+
+                            </div>
+
+                            {drug.action_types && (
+
+                                <span className="drug-badge">
+
+                                    {drug.action_types}
+
+                                </span>
+
+                            )}
+
+                        </div>
+
+                        <div className="drug-info">
+
+                            {drug.median_pchembl && (
+
+                                <div className="drug-row">
+
+                                    <span>
+
+                                        Median pChEMBL
+
+                                    </span>
+
+                                    <span>
+
+                                        {Number(drug.median_pchembl).toFixed(2)}
+
+                                    </span>
+
+                                </div>
+
+                            )}
+
+                        </div>
+
+                    </div>
+
+                ))}
+
+            </div>
+
         </div>
+
     );
 }

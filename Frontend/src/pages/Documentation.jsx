@@ -1,4 +1,14 @@
-import Navbar from "../components/NavBar";
+import { useParams, Link } from "react-router-dom";
+import {
+    LuDna,
+    LuPill,
+    LuChartColumn,
+    LuMicroscope,
+    LuTriangleAlert,
+    LuDatabase,
+    LuChartBar,
+} from "react-icons/lu";
+
 
 export default function Documentation() {
 
@@ -10,154 +20,338 @@ export default function Documentation() {
             }}
         >
 
-            <Navbar />
+            {/* ================= TOP BAR ================= */}
 
-            <h1>Documentation</h1>
+            <div className="topbar">
 
-            <h2>Overview</h2>
+                <Link
+                    to="/"
+                    className="top-left"
+                >
 
-            <p>
-                The GPCR Database is an integrated resource
-                containing GPCR receptor information,
-                tissue expression data, drug-target
-                interactions, bioactivity measurements,
-                molecular descriptors, and side-effect
-                information.
-            </p>
+                    <span className="brand-logo">
+                        🧬
+                    </span>
 
-            <h2>Data Sources</h2>
+                    <span className="brand-name">
+                        Home
+                    </span>
 
-            <ul>
-                <li>ChEMBL</li>
-                <li>DrugBank</li>
-                <li>PubChem</li>
-                <li>Human Protein Atlas (HPA)</li>
-                <li>GTEx</li>
-                <li>SIDER</li>
-                <li>OFFSIDES</li>
-                <li>OpenFDA</li>
-            </ul>
+                </Link>
 
-            <h2>Database Statistics</h2>
+                <div className="top-right">
 
-            <ul>
-                <li>805 GPCRs</li>
-                <li>330,562 Molecules</li>
-                <li>592,361 Drug-GPCR Interactions</li>
-                <li>12,758 Side Effects</li>
-            </ul>
-            <h2>Data Source Contributions</h2>
+                    <Link to="/about">
+                        About
+                    </Link>
 
-            <h3>ChEMBL</h3>
-            <ul>
-                <li>GPCR receptor information</li>
-                <li>Target identifiers</li>
-                <li>Drug structures</li>
-                <li>Molecular descriptors</li>
-                <li>Bioactivity measurements</li>
-                <li>Drug-target interactions</li>
-            </ul>
+                    <Link to="/docs">
+                        Documentation
+                    </Link>
 
-            <h3>DrugBank</h3>
-            <ul>
-                <li>Drug identifiers</li>
-                <li>Drug names and synonyms</li>
-                <li>Approval status</li>
-                <li>Drug annotations</li>
-            </ul>
+                </div>
 
-            <h3>PubChem</h3>
-            <ul>
-                <li>Compound identifiers</li>
-                <li>Chemical annotations</li>
-            </ul>
+            </div>
 
-            <h3>Human Protein Atlas (HPA)</h3>
-            <ul>
-                <li>Tissue-specific expression profiles</li>
-                <li>Whole-body expression summaries</li>
-            </ul>
+            <div className="doc-container">
 
-            <h3>GTEx</h3>
-            <ul>
-                <li>TPM expression measurements</li>
-                <li>Brain-region expression data</li>
-                <li>Expression specificity metrics</li>
-            </ul>
 
-            <h3>SIDER, OFFSIDES, OpenFDA</h3>
-            <ul>
-                <li>Drug side effects</li>
-                <li>Adverse event associations</li>
-                <li>Safety information</li>
-            </ul>
-            <h2>Database Features</h2>
 
-            <ul>
-                <li>Search by receptor name</li>
-                <li>Search by receptor synonym</li>
-                <li>Search by ChEMBL target ID</li>
-                <li>Browse GPCR expression profiles</li>
-                <li>Explore drug-GPCR interactions</li>
-                <li>View bioactivity measurements</li>
-                <li>Investigate drug side effects</li>
-            </ul>
-            <h2>API Endpoints</h2>
+                <h1>Getting Started</h1>
 
-            <ul>
-                <li>/search?q=...</li>
-                <li>/gpcr/{`{gpcr_id}`}</li>
-                <li>/gpcr/{`{gpcr_id}`}/drugs</li>
-                <li>/drug/{`{mol_id}`}</li>
-                <li>/drug/{`{mol_id}`}/targets</li>
-                <li>/drug/{`{mol_id}`}/sideeffects</li>
-                <li>/stats</li>
-            </ul>
+                <p className="doc-lead">
+                    Welcome! The GPCR Drug Discovery Platform was designed to
+                    be straightforward to explore, so if you enjoy discovering
+                    things on your own, feel free to jump right in.
+                </p>
 
-            <h2>Data Processing Pipeline</h2>
+                <p>
+                    If you're short on time or simply want to know where
+                    everything is, this guide provides a quick overview of
+                    every module and the type of information available
+                    throughout the platform.
+                </p>
 
-            <h2>Database Schema</h2>
+                {/* Quick Navigation */}
 
-            <ul>
-                <li>gpcr - receptor information</li>
-                <li>gpcr_xrefs - external identifiers</li>
-                <li>expression_summary - tissue expression data</li>
-                <li>molecule - drug information</li>
-                <li>mol_descriptors - molecular properties</li>
-                <li>drug_gpcr_v2 - drug-target interactions</li>
-                <li>side_effect - side effect annotations</li>
-            </ul>
+                <h2>Where would you like to start?</h2>
 
-            <p>
-                Data were collected from multiple public
-                resources and standardized into a unified
-                PostgreSQL database. Drug identifiers,
-                eceptor identifiers, expression data,
-                bioactivity measurements, and side-effect
-                information were integrated through
-                cross-reference mapping and quality-control
-                procedures.
-            </p>
+                <div className="doc-grid">
 
-            <h2>Search Capabilities</h2>
+                    <div className="doc-card">
+                        <h3>
+                            <LuDna className="doc-icon" />
+                            GPCRs
+                        </h3>
+                        <p>
+                            Browse receptor information,
+                            classification,
+                            expression,
+                            bioactivity and structures.
+                        </p>
+                    </div>
 
-            <ul>
-                <li>Search by receptor name</li>
-                <li>Search by receptor synonyms</li>
-                <li>Search by ChEMBL target ID</li>
-                <li>Navigate from GPCR to drugs</li>
-                <li>Navigate from drugs to GPCR targets</li>
-            </ul>
+                    <div className="doc-card">
+                        <h3>
+                            <LuPill className="doc-icon" />
+                            Drugs
+                        </h3>
+                        <p>
+                            Explore molecular properties,
+                            GPCR targets,
+                            bioactivity
+                            and reported adverse drug reactions.
+                        </p>
+                    </div>
 
-            <h2>Citation</h2>
+                    <div className="doc-card">
+                        <h3>
+                            <LuChartColumn className="doc-icon" />
+                            Prediction
+                        </h3>
+                        <p>
+                            Predict pChEMBL values
+                            for novel GPCR–ligand pairs.
+                        </p>
+                    </div>
 
-            <p>
-                If you use this database in academic work,
-                please cite the associated publication and
-                the original data sources including ChEMBL,
-                DrugBank, GTEx, Human Protein Atlas,
-                SIDER, OFFSIDES and OpenFDA.
-            </p>
+                    <div className="doc-card">
+                        <h3>
+                            <LuMicroscope className="doc-icon" />
+                            Expression
+                        </h3>
+
+                        <p>
+                            Explore GPCR expression across
+                            human tissues and cell types.
+                        </p>
+                    </div>
+
+                    <div className="doc-card">
+                        <h3>
+                            <LuTriangleAlert className="doc-icon" />
+                            Side Effects
+                        </h3>
+                        
+                        <p>
+                            Explore reported adverse drug reactions
+                            organised into Fine, Mid and Coarse labels.
+                        </p>
+                    </div>
+
+                    <div className="doc-card">
+                        <h3>
+                            <LuChartBar className="doc-icon" />
+                            Statistics
+                        </h3>
+                        <p>
+                            View database coverage,
+                            record counts
+                            and summary statistics.
+                        </p>
+                    </div>
+
+                </div>
+
+                {/* Modules */}
+
+                <h2>Database Modules</h2>
+
+                <div className="doc-grid">
+
+                    <div className="module-cards">
+
+                        <h3>GPCR Module</h3>
+
+                        <h4>You'll find</h4>
+
+                        <ul>
+
+                            <li>Receptor information</li>
+
+                            <li>Classification</li>
+
+                            <li>Protein properties</li>
+
+                            <li>Tissue expression</li>
+
+                            <li>Associated drugs</li>
+
+                            <li>Bioactivity records</li>
+
+                            <li>Structural information</li>
+
+                        </ul>
+
+                    </div>
+
+                    <div className="module-cards">
+
+                        <h3>Drug Module</h3>
+
+                        <h4>You'll find</h4>
+
+                        <ul>
+
+                            <li>Molecular properties</li>
+
+                            <li>GPCR targets</li>
+
+                            <li>Experimental bioactivity</li>
+
+                            <li>Reported adverse drug reactions</li>
+
+                        </ul>
+
+                    </div>
+
+                    <div className="module-cards">
+
+                        <h3>Expression</h3>
+
+                        <h4>Available Information</h4>
+
+                        <ul>
+
+                            <li>Whole-body expression</li>
+
+                            <li>Tissue-specific expression</li>
+
+                            <li>Cell-type expression</li>
+
+                        </ul>
+
+                    </div>
+
+                    <div className="module-cards">
+
+                        <h3>pChEMBL Prediction</h3>
+
+                        <h4>Workflow</h4>
+
+                        <ol>
+
+                            <li>Enter a SMILES string.</li>
+
+                            <li>Select a GPCR.</li>
+
+                            <li>Generate prediction.</li>
+
+                            <li>Review predicted pChEMBL and similar molecules.</li>
+
+                        </ol>
+
+                    </div>
+
+                </div>
+
+                {/* Interpretation */}
+
+                <h2>Understanding the Results</h2>
+
+                <table className="doc-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Term</th>
+
+                            <th>Meaning</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Higher pChEMBL</td>
+
+                            <td>Stronger predicted ligand affinity.</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Lower pChEMBL</td>
+
+                            <td>Weaker predicted ligand affinity.</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Fine Label</td>
+
+                            <td>Specific reported adverse event.</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Mid Label</td>
+
+                            <td>Functionally related adverse-event category.</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Coarse Label</td>
+
+                            <td>Broad physiological or organ-system category.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+                {/* Data Sources */}
+
+                <h2>Integrated Data Sources</h2>
+
+                <div className="source-tags">
+
+                    <span>GPCRdb</span>
+
+                    <span>ChEMBL</span>
+
+                    <span>DrugBank</span>
+
+                    <span>PubChem</span>
+
+                    <span>GTEx</span>
+
+                    <span>Human Protein Atlas</span>
+
+                    <span>SIDER</span>
+
+                    <span>OpenFDA</span>
+
+                    <span>OFFSIDES</span>
+
+                </div>
+                
+                {/* Disclaimer */}
+
+                <div className="disclaimer">
+
+                    <h2>Disclaimer</h2>
+
+                    <p>
+                        Information presented in this platform has been
+                        integrated from publicly available biomedical
+                        resources. Computational predictions are intended
+                        solely for research purposes and should not replace
+                        experimental validation or clinical judgement.
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
     );

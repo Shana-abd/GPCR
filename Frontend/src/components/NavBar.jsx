@@ -11,6 +11,8 @@ export default function Navbar() {
             {" | "}
             <Link to="/gpcrs">Browse GPCRs</Link>
             {" | "}
+            <Link to="/gpcrs">pChEMBL Prediction</Link>
+            {" | "}
             <Link to="/stats">Statistics</Link>
             {" | "}
             <Link to="/about">About</Link>

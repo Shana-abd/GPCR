@@ -1,96 +1,209 @@
-import Navbar from "../components/NavBar";
+import { useParams, Link } from "react-router-dom";
 
 export default function About() {
-    return (
-        <div 
-            style={{ 
-                padding: "40px",
-                textAlign: "left"
-            }}
-        >
+    return(
+    
+            <div style={{ padding: "24px 40px 40px" }}>
 
-            <Navbar />
+            {/* ================= TOP BAR ================= */}
 
-            <h1>About GPCR Database</h1>
+            <div className="topbar">
+
+                <Link
+                    to="/"
+                    className="top-left"
+                >
+
+                    <span className="brand-logo">
+                        🧬
+                    </span>
+
+                    <span className="brand-name">
+                        Home
+                    </span>
+
+                </Link>
+
+                <div className="top-right">
+
+                    <Link to="/about">
+                        About
+                    </Link>
+
+                    <Link to="/docs">
+                        Documentation
+                    </Link>
+
+                </div>
+
+            </div>
+
+            <div className="about-container">
+
+            <h1>About the GPCR Drug Discovery Platform</h1>
 
             <p>
-                The GPCR Database is an integrated resource for exploring
-                human G-protein-coupled receptors (GPCRs), their expression
-                profiles, drug interactions, bioactivity measurements,
-                and associated side effects.
+                The <b>GPCR Drug Discovery Platform</b> is a comprehensive web-based
+                resource designed to facilitate the exploration of G protein-coupled
+                receptors (GPCRs), one of the largest and most therapeutically important
+                families of drug targets covering one by third of FDA approved drug targets.
+                The platform integrates diverse biological,pharmacological and computational 
+                datasets into a unified interface,enabling researchers to efficiently investigate GPCRs, 
+                their ligands,bioactivity, tissue expression and associated adverse drug reactions.
+                The database is also integrated with an ML- based pChembl predictor for a GPCR-ligand pair.
             </p>
 
-            <h2>Current Coverage</h2>
+            
+
+            <h2>Why This Platform?</h2>
+
+            <p>
+                Information relevant to GPCR research is often distributed across multiple
+                independent databases, requiring extensive manual integration before
+                meaningful analyses can be performed. This platform addresses that
+                challenge by combining receptor information, drug-target interactions,
+                bioactivity measurements, tissue expression profiles and drug safety
+                information into a single searchable resource. In addition, computational
+                prediction tools are incorporated to assist researchers in prioritizing
+                potential GPCR–ligand interactions.
+            </p>
+
+            
+
+            <h2>Platform Features</h2>
+
+            <div className="feature-card-grid">
+
+                <div className="about-card">
+                    <h3>🧬 GPCR Browser</h3>
+                    <p>
+                        Explore GPCR classes, families, receptor annotations,
+                        protein characteristics and structural information.
+                    </p>
+                </div>
+
+                <div className="about-card">
+                    <h3>💊 Drug & Bioactivity</h3>
+                    <p>
+                        Browse GPCR-targeting drugs, experimentally determined
+                        bioactivity values, ligand information, receptor interactions
+                        and reported adverse drug reactions.
+                    </p>
+                </div>
+
+                <div className="about-card">
+                    <h3>🧠 Tissue Expression</h3>
+                    <p>
+                        Investigate GPCR expression across multiple human tissues
+                        using integrated transcriptomic datasets.
+                    </p>
+                </div>
+
+                <div className="about-card">
+                    <h3>🩺 Adverse Drug Reactions</h3>
+
+                    <p>
+                        Explore reported adverse drug reactions organized into a
+                        hierarchical ontology consisting of:
+                    </p>
+
+                    <ul>
+                        <li>Fine Labels – Specific adverse events</li>
+                        <li>Mid Labels – Functional categories</li>
+                        <li>Coarse Labels – Organ-system categories</li>
+                    </ul>
+
+                </div>
+
+                <div className="about-card">
+                    <h3>📈 pChEMBL Prediction</h3>
+
+                    <p>
+                        Predict GPCR–ligand binding affinity using an integrated
+                        machine learning model trained on experimentally validated
+                        bioactivity data.
+                    </p>
+
+                </div>
+
+                <div className="about-card">
+                    <h3>🔍 Integrated Search</h3>
+
+                        <p>
+                        Search GPCRs, drugs and associated biological information
+                        through a unified interface.
+                        </p>
+
+                </div>
+
+            </div>
+
+            
+
+            <h2>Integrated Data Sources</h2>
+
+            <p>
+                The platform integrates curated information from several publicly
+                available biomedical databases, including:
+            </p>
+
+            <div className="source-tags">
+
+                <span>GPCRdb</span>
+
+                <span>ChEMBL</span>
+
+                <span>DrugBank</span>
+
+                <span>PubChem</span>
+
+                <span>GTEx</span>
+
+                <span>Human Protein Atlas</span>
+
+                <span>SIDER</span>
+
+                <span>OpenFDA</span>
+
+                <span>OFFSIDES</span>
+
+            </div>
+
+            
+
+            <h2>Applications</h2>
+
+            <p>
+                The GPCR Drug Discovery Platform supports a broad range of research
+                applications including GPCR pharmacology, drug discovery, target
+                prioritization, computational biology, bioinformatics, systems
+                pharmacology and machine learning-assisted drug development.
+            </p>
+
+           
+
+            <h2>Technology Stack</h2>
 
             <ul>
-                <li>805 GPCRs</li>
-                <li>330,562 molecules</li>
-                <li>592,361 drug-GPCR interactions</li>
-                <li>9,465 side effects</li>
+                <li><b>Frontend:</b> React</li>
+                <li><b>Backend:</b> FastAPI</li>
+                <li><b>Database:</b> PostgreSQL</li>
+                <li><b>Machine Learning:</b> XGBoost</li>
+                <li><b>Cheminformatics:</b> RDKit</li>
+                <li><b>Data Processing:</b> Python & Pandas</li>
             </ul>
 
-            <h2>Data Sources and Contributions</h2>
 
-            <h3>ChEMBL</h3>
+            <h2>Disclaimer</h2>
 
-            <ul>
-                <li>GPCR receptor information</li>
-                <li>Target identifiers</li>
-                <li>Drug structures</li>
-                <li>Molecular descriptors</li>
-                <li>Bioactivity measurements</li>
-                <li>Drug-target interactions</li>
-            </ul>
+            <p>
+                The database integrates information obtained from publicly available
+                biomedical resources. The pChEMBL prediction module provides
+                machine learning-based estimates intended to support research and
+                hypothesis generation. Predictions should not be considered a substitute
+                for experimental validation or clinical decision making.
+            </p>
 
-            <h3>DrugBank</h3>
-
-            <ul>
-                <li>Drug identifiers</li>
-                <li>Drug names and synonyms</li>
-                <li>Approval status</li>
-                <li>Drug annotations</li>
-            </ul>
-
-            <h3>PubChem</h3>
-
-            <ul>
-                <li>Compound identifiers</li>
-                <li>Chemical annotations</li>
-            </ul>
-
-            <h3>Human Protein Atlas (HPA)</h3>
-
-            <ul>
-                <li>Tissue-specific expression profiles</li>
-                <li>Whole-body expression summaries</li>
-            </ul>
-
-            <h3>GTEx</h3>
-
-            <ul>
-                <li>TPM expression measurements</li>
-                <li>Brain-region expression data</li>
-                <li>Expression specificity metrics</li>
-            </ul>
-
-            <h3>SIDER</h3>
-
-            <ul>
-                <li>Drug side effects</li>
-            </ul>
-
-            <h3>OFFSIDES</h3>
-
-            <ul>
-                <li>Pharmacovigilance-derived adverse event associations</li>
-            </ul>
-
-            <h3>OpenFDA</h3>
-
-            <ul>
-                <li>FDA adverse event reports</li>
-            </ul>
-
+            </div>
         </div>
-    );
-}
+    )}

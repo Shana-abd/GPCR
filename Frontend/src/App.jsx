@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+
 import DrugDetail from "./pages/DrugDetail";
 import Stats from "./pages/Stats";
-import Navbar from "./components/NavBar";
 import About from "./pages/About";
 import Documentation from "./pages/Documentation";
 import GpcrBrowser from "./pages/GpcrBrowser";
@@ -12,12 +12,27 @@ import GpcrBioactivity from "./pages/GpcrBioactivity";
 import GpcrDetail from "./pages/GpcrDetail";
 import GpcrStructure from "./pages/GpcrStructure";
 import DrugTargets from "./pages/DrugTargets";
+import Prediction from "./pages/prediction";
+import DrugBrowser from "./pages/DrugBrowser";
+
+import ModuleCard from "./components/ModuleCard";
+
+import {
+  Home,
+  Dna,
+  Pill,
+  BrainCircuit,
+  ShieldAlert,
+} from "lucide-react";
 
 function SearchPage() {
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [stats, setStats] = useState(null);
+  
 
+  // Search
   useEffect(() => {
 
     if (query.length < 2) {
@@ -31,99 +46,219 @@ function SearchPage() {
 
   }, [query]);
 
+  useEffect(() => {
+
+    fetch("https://gpcr.onrender.com/stats")
+      .then(res => res.json())
+      .then(setStats);
+
+  }, []);
+
   return (
     <div
-      style={{
-        padding: "40px",
-        textAlign: "center"
-      }}
+  style={{
+    padding: "24px 40px 40px"
+  }}
+>
+
+    <div className="topbar">
+
+        <Link to="/" className="top-left">
+
+          <span className="brand-logo">🧬</span>
+
+          <span className="brand-name">
+            Home
+          </span>
+
+        </Link>
+
+        <div className="top-right">
+
+            <Link to="/about">
+                About
+            </Link>
+
+            <Link to="/docs">
+                Documentation
+            </Link>
+
+        </div>
+
+    </div>
+
+    <div
+        style={{
+            textAlign:"center",
+            marginTop:"40px"
+        }}
     >
-      <Navbar />
 
-      <div style={{ marginTop: "60px" }}>
+        <h1 className="home-title">
 
-        <h1>GPCR Database</h1>
+            GPCR Database
+
+        </h1>
 
         <p
           style={{
-            fontSize: "18px",
-            marginBottom: "30px",
-            color: "#9ca3af"
+            fontSize: "20px",
+            color: "#9ca3af",
+            maxWidth: "900px",
+            margin: "0 auto 14px",
+            lineHeight: "1.6"
           }}
         >
-          Integrated GPCR, Drug, Expression, Bioactivity and Side Effect Resource
+
+        </p>
+
+        <p
+          style={{
+            fontSize: "16px",
+            color: "#7b8190",
+            maxWidth: "760px",
+            margin: "0 auto 36px",
+            lineHeight: "1.7"
+          }}
+        >   
+          Integrated GPCR , Drug , Bioactivity and Side effect resource.
         </p>
 
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search receptor, drug, synonym, or ChEMBL ID..."
+          placeholder="Search receptors, drugs, genes, synonyms or ChEMBL IDs..."
           style={{
-            width: "650px",
-            maxWidth: "90%",
-            padding: "14px",
-            fontSize: "16px",
-            borderRadius: "10px",
-            border: "1px solid #444"
+            width: "720px",
+            maxWidth: "92%",
+            padding: "18px 22px",
+            fontSize: "17px",
+            borderRadius: "14px",
+            border: "1px solid #363b46",
+            background: "#23262f",
+            color: "#ffffff",
+            outline: "none",
+            transition: "0.25s",
+            boxShadow: "0 6px 20px rgba(0,0,0,0.15)"
           }}
         />
 
-        <div
-          style={{
-            marginTop: "25px",
-            marginBottom: "40px",
-            display: "flex",
-            justifyContent: "center",
-            gap: "30px",
-            flexWrap: "wrap"
-          }}
-        >
-          <span>805 GPCRs</span>
-          <span>330,562 Molecules</span>
-          <span>592,361 Interactions</span>
-          <span>9,465 Side Effects</span>
-        </div>
+        
         <div className="feature-section">
 
-          <h2>What can you explore?</h2>
+          <h2>What can you Explore?</h2>
 
           <div className="feature-grid">
 
-            <div className="feature-card">
-              <h3>🧬 GPCRs</h3>
-              <p>
-                Browse receptor classes, families, ligands,
-                structures and tissue expression profiles.
-              </p>
-            </div>
+            <ModuleCard
+              to="/gpcrs"
+              color="gpcr"
+              icon={<Dna size={38} />}
+              title="Browse GPCRs"
+              description="Explore receptor families, structures, ligands and tissue expression."
+            />
 
-            <div className="feature-card">
-              <h3>💊 Drugs</h3>
-              <p>
-                Explore GPCR-targeting molecules, bioactivity
-                records and target interactions.
-              </p>
-            </div>
+            <ModuleCard
+              to="/drugs"
+              color="drug"
+              icon={<Pill size={38} />}
+              title="Browse Ligands"
+              description="Explore GPCR-targeting compounds, molecular properties and receptor interactions."
+            />
 
-            <div className="feature-card">
-              <h3>🩺 Side Effects</h3>
-              <p>
-                Investigate adverse events with fine, mid and
-                coarse hierarchy classifications.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <h3>📊 Expression</h3>
-              <p>
-                View tissue-specific GPCR expression data
-                across multiple organs and tissues.
-              </p>
-            </div>
+            <ModuleCard
+              to="/prediction"
+              color="prediction"
+              icon={<BrainCircuit size={38} />}
+              title="pChEMBL Prediction"
+              description="Predict ligand affinity using the integrated machine learning model."
+            />
 
           </div>
 
         </div>
+
+        {/* ================= FOOTER ================= */}
+
+        <footer className="home-footer">
+
+          <div className="footer-column">
+
+           <h3>Database</h3>
+
+            <p>
+              <span className="stat-number">
+                {stats?.n_gpcrs?.toLocaleString()}
+              </span>{" "}
+              GPCRs
+            </p>
+
+            <p>         
+              <span className="stat-number">
+                {stats?.n_drugs?.toLocaleString()}
+              </span>{" "}
+              Molecules
+            </p>
+
+            <p>
+              <span className="stat-number">
+                {stats?.n_interactions?.toLocaleString()}
+              </span>{" "}
+              Interactions
+            </p>
+
+            <p>
+              <span className="stat-number">
+                {stats?.n_side_effects?.toLocaleString()}
+              </span>{" "}
+              Side Effects
+            </p>
+
+          </div>
+
+          <div className="footer-column">
+
+            <h3>Data Sources</h3>
+
+            <p>GPCRdb</p>
+
+            <p>ChEMBL</p>
+
+            <p>DrugBank</p>
+
+            <p>GTEx</p>
+
+            <p>Human Protein Atlas</p>
+
+            <p>PubChem</p>
+
+            <p>SIDER</p>
+
+            <p>Offsides</p>
+
+            <p>OpenFDA</p>
+
+          </div>
+
+          <div className="footer-column">
+
+            <h3>Resources</h3>
+
+            <Link to="/docs">
+              Documentation
+            </Link>
+
+            <Link to="/about">
+              About
+            </Link>
+
+            <Link to="/about">
+              Contact
+            </Link>
+
+          </div>
+
+        </footer>
 
       </div>
 
@@ -228,6 +363,10 @@ export default function App() {
           path="/stats"
           element={<Stats />}
         />
+        <Route
+          path="/drugs"
+          element={<DrugBrowser />}
+        />
 
         <Route
           path="/docs"
@@ -249,6 +388,10 @@ export default function App() {
           path="/drug/:mol_id/targets"
           element={<DrugTargets />}
         />
+        <Route
+          path="/prediction"
+          element={<Prediction />}
+        />
         
 
       </Routes>
@@ -256,3 +399,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
