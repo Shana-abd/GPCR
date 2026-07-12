@@ -6,12 +6,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi import Query
 
-from prediction.prediction_service import predict_for_user
+# from prediction.prediction_service import predict_for_user
 app = FastAPI(
     title="GPCR Database API",
     version="1.0"
 )
-
+# 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -31,14 +31,14 @@ class PredictionRequest(BaseModel):
 def home():
     return {"message": "GPCR Database API running",
             "deploy_test": "v2"}
-@app.post("/predict")
-def predict(request: PredictionRequest):
+# @app.post("/predict")
+# def predict(request: PredictionRequest):
 
-    return predict_for_user(
-        smiles=request.smiles,
-        gpcr_id=request.gpcr_id,
-        top_n=10
-    )
+#     return predict_for_user(
+#         smiles=request.smiles,
+#         gpcr_id=request.gpcr_id,
+#         top_n=10
+#     )
 
 
 @app.get("/gpcrs")
