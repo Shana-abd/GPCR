@@ -1,3 +1,4 @@
+print("=== DEPLOY TEST 2026-07-12 ===")
 from fastapi import FastAPI
 from sqlalchemy import text
 from database import SessionLocal
