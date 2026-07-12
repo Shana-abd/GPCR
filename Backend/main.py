@@ -3,6 +3,7 @@ from sqlalchemy import text
 from database import SessionLocal
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from fastapi import Query
 
 from prediction.prediction_service import predict_for_user
 app = FastAPI(
@@ -122,6 +123,7 @@ def get_gpcr(gpcr_id: int):
             g.receptor_class,
             g.receptor_family,
             g.ligand_type,
+            g.alt_names,
 
             x.uniprot_id,
             x.ensembl_gene_id,
@@ -129,11 +131,16 @@ def get_gpcr(gpcr_id: int):
             s.seq_length,
             s.mol_wt,
             s.isoelectric_point,
+            s.t_sequence,
 
             st.tm_count,
             st.has_dry,
             st.has_npxxy,
-            st.tm_count,
+            s.aromaticity,
+            s.instability_index,
+            s.charge_ph7,
+            s.gravy,
+             
 
             es.wholebody_max_tpm,
             es.wholebody_max_tissue,
@@ -279,9 +286,11 @@ def get_drug_sideeffects(mol_id: str):
     result = db.execute(
         text("""
             SELECT
+             
                 se.term,
                 se.mid_label,
                 se.coarse_label,
+                dse.side_effect_id,
                 dse.final_weight,
                 dse.confidence,
                 dse.n_sources
@@ -289,7 +298,10 @@ def get_drug_sideeffects(mol_id: str):
             JOIN side_effect se
                 ON dse.side_effect_id = se.side_effect_id
             WHERE dse.mol_id = :mol_id
-            ORDER BY dse.final_weight DESC
+            ORDER BY
+                coarse_label,
+                mid_label,
+                fine_label
 
         
         """),
@@ -337,6 +349,64 @@ def get_drug_targets(mol_id: str):
     db.close()
 
     return rows
+
+print("el")
+@app.get("/drugs")
+def get_drugs(
+    search: str = Query(default=""),
+    limit: int = Query(default=50),
+    offset: int = Query(default=0)
+):
+
+    db = SessionLocal()
+
+    pattern = f"%{search}%"
+
+    result = db.execute(
+        text("""
+        SELECT
+            m.mol_id,
+            m.mol_name,
+            m.drugbank_id,
+            m.pubchem_cid,
+
+            d.mol_wt,
+            d.logp,
+            d.tpsa
+
+        FROM molecule m
+
+        LEFT JOIN mol_descriptors d
+            ON m.mol_id = d.mol_id
+
+        WHERE
+        (
+            :search = ''
+            OR m.mol_name ILIKE :pattern
+            OR CAST(m.mol_id AS TEXT) ILIKE :pattern
+            OR COALESCE(m.drugbank_id, '') ILIKE :pattern
+        )
+
+        ORDER BY
+            m.mol_name
+
+        LIMIT :limit
+        OFFSET :offset
+        """),
+        {
+            "search": search,
+            "pattern": pattern,
+            "limit": limit,
+            "offset": offset
+        }
+    )
+
+    rows = result.mappings().all()
+
+    db.close()
+
+    return rows
+print("get_drugs")
 @app.get("/drug/{mol_id}/bioactivity")
 def get_drug_bioactivity(mol_id: str):
 
@@ -346,19 +416,23 @@ def get_drug_bioactivity(mol_id: str):
         text("""
         SELECT
             b.bioactivity_id,
+
             b.action_type,
-            b.std_type,
-            b.std_value,
-            b.std_units,
+
+            b.std_type AS standard_type,
+
+            b.std_relation AS standard_relation,
+
+            b.std_value AS standard_value,
+
+            b.std_units AS standard_units,
+
             b.pchembl_value,
 
-            a.assay_type,
-            a.organism,
-            a.assay_tissue,
-            a.target_name,
+            b.max_phase,
 
             g.gpcr_id,
-            g.t_name
+            g.t_name AS gpcr_name
 
         FROM bioactivity b
 
@@ -437,6 +511,7 @@ def get_expression(gpcr_id: int):
     result = db.execute(
         text("""
         SELECT
+            o.organ_name,
             t.tissue_name,
             e.median_tpm
 
@@ -445,10 +520,14 @@ def get_expression(gpcr_id: int):
         JOIN tissue t
             ON e.tissue_id = t.tissue_id
 
+        JOIN organ o
+            ON t.organ_id = o.organ_id
+
         WHERE e.gpcr_id = :gpcr_id
           AND e.median_tpm > 0
 
-        ORDER BY e.median_tpm DESC
+        ORDER BY
+            e.median_tpm DESC
         """),
         {"gpcr_id": gpcr_id}
     )
@@ -524,4 +603,8 @@ def get_stats():
     db.close()
 
     return row
+print("\n===== REGISTERED ROUTES =====")
+
+for route in app.routes:
+    print(route.path)
 
