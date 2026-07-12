@@ -228,13 +228,14 @@ code {
     flex-shrink:0;
 
 }
+
 .gpcr{
 
     background:rgba(34,211,238,.12);
 
-    border-color:rgba(34,211,238,.35);
+    border-color:rgba(238, 99, 34, 0.35);
 
-    color:#22D3EE;
+    color:#ee5c22;
 
     box-shadow:0 0 25px rgba(34,211,238,.12);
 

@@ -15,6 +15,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+        "https://gpcr.onrender.com",
     ],
     allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
@@ -293,7 +294,7 @@ def get_drug_sideeffects(mol_id: str):
                 dse.side_effect_id,
                 dse.final_weight,
                 dse.confidence,
-                dse.n_sources
+                dse.n_sources,
             FROM drug_side_effect dse
             JOIN side_effect se
                 ON dse.side_effect_id = se.side_effect_id

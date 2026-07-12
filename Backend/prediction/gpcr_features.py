@@ -1,20 +1,7 @@
 import pandas as pd
-from sqlalchemy import create_engine
 
-# ==========================================================
-# DATABASE CONFIG
-# ==========================================================
+from database import engine
 
-DB_USER = "gpcr_user"
-DB_PASSWORD = "hpyD5zeVpW7AU0Hxs7M6VyDcFxzo5b9b"
-DB_HOST = "dpg-d8nqi08k1i2s73dkgrgg-a.virginia-postgres.render.com"
-DB_PORT = "5432"
-DB_NAME = "gpcr"
-
-
-engine = create_engine(
-    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
 
 # ==========================================================
 # LOAD CORE GPCR FEATURES
