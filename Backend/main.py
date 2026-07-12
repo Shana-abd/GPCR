@@ -29,7 +29,8 @@ class PredictionRequest(BaseModel):
 
 @app.get("/")
 def home():
-    return {"message": "GPCR Database API running"}
+    return {"message": "GPCR Database API running",
+            "deploy_test": "v2"}
 @app.post("/predict")
 def predict(request: PredictionRequest):
 
