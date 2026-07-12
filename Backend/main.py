@@ -170,6 +170,8 @@ def get_gpcr(gpcr_id: int):
     )
 
     row = result.mappings().first()
+    print("ALT_NAMES:", row.get("alt_names"))
+    print("ROW KEYS:", row.keys())
 
     db.close()
 
