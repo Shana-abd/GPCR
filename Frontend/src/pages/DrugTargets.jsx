@@ -10,7 +10,7 @@ export default function DrugTargets() {
 
     useEffect(() => {
 
-        fetch(`https://gpcr.onrender.com/drug/${mol_id}/targets`)
+        fetch(`http://localhost:8000/drug/${mol_id}/targets`)
             .then(res => res.json())
             .then(data => setTargets(data));
 

@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi import Query
 
-# from prediction.prediction_service import predict_for_user
+from prediction.prediction_service import predict_for_user
 app = FastAPI(
     title="GPCR Database API",
     version="1.0"
@@ -31,14 +31,14 @@ class PredictionRequest(BaseModel):
 def home():
     return {"message": "GPCR Database API running",
             "deploy_test": "v2"}
-# @app.post("/predict")
-# def predict(request: PredictionRequest):
+@app.post("/predict")
+def predict(request: PredictionRequest):
 
-#     return predict_for_user(
-#         smiles=request.smiles,
-#         gpcr_id=request.gpcr_id,
-#         top_n=10
-#     )
+    return predict_for_user(
+        smiles=request.smiles,
+        gpcr_id=request.gpcr_id,
+        top_n=10
+    )
 
 
 @app.get("/gpcrs")
@@ -298,7 +298,7 @@ def get_drug_sideeffects(mol_id: str):
                 dse.side_effect_id,
                 dse.final_weight,
                 dse.confidence,
-                dse.n_sources,
+                dse.n_sources
             FROM drug_side_effect dse
             JOIN side_effect se
                 ON dse.side_effect_id = se.side_effect_id
@@ -306,7 +306,7 @@ def get_drug_sideeffects(mol_id: str):
             ORDER BY
                 coarse_label,
                 mid_label,
-                fine_label
+                term
 
         
         """),
@@ -434,7 +434,7 @@ def get_drug_bioactivity(mol_id: str):
 
             b.pchembl_value,
 
-            b.max_phase,
+            b.max_ph,
 
             g.gpcr_id,
             g.t_name AS gpcr_name
@@ -579,9 +579,11 @@ def get_stats():
         text("""
         SELECT
             (SELECT COUNT(*) FROM gpcr) AS n_gpcrs,
-            (SELECT COUNT(*) FROM molecule) AS n_drugs,
+            (SELECT COUNT(DISTINCT smiles) FROM molecule) AS n_drugs,
             (SELECT COUNT(*) FROM drug_gpcr_v2) AS n_interactions,
             (SELECT COUNT(*) FROM side_effect) AS n_side_effects,
+            (SELECT COUNT(DISTINCT mid_label) FROM side_effect) AS n_mid_labels,
+            (SELECT COUNT(DISTINCT coarse_label) FROM side_effect) AS n_coarse_labels,
             (SELECT COUNT(*) FROM expression_summary)
             AS gpcr_with_expression,
 

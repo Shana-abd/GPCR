@@ -20,7 +20,7 @@ export default function PchemblPrediction() {
 
     useEffect(() => {
 
-        fetch("https://gpcr.onrender.com/gpcrs")
+        fetch("http://localhost:8000/gpcrs")
             .then((res) => res.json())
             .then((data) => setGpcrs(data));
 
@@ -45,7 +45,7 @@ export default function PchemblPrediction() {
         try {
 
             const response = await fetch(
-                "https://gpcr.onrender.com/predict",
+                "http://localhost:8000/predict",
                 {
                     method: "POST",
                     headers: {
@@ -162,7 +162,9 @@ export default function PchemblPrediction() {
                         padding: "12px",
                         fontSize: "16px",
                         borderRadius: "8px",
-                        border: "1px solid #ccc"
+                        background: "#24262B",
+                        color: "#c5dcf3",
+                        border: "1px solid #3B3E46"
                     }}
                 />
 
@@ -224,7 +226,7 @@ export default function PchemblPrediction() {
                             padding: "16px",
                             border: "1px solid #ddd",
                             borderRadius: "8px",
-                            background: "#fafafa"
+                            background: "#F5F5F5"
                         }}
                     >
 

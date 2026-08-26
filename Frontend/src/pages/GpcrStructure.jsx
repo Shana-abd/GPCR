@@ -10,7 +10,7 @@ export default function GpcrStructure() {
 
     useEffect(() => {
 
-        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/structure`)
+        fetch(`http://localhost:8000/gpcr/${gpcr_id}/structure`)
             .then(res => res.json())
             .then(data => setData(data));
 

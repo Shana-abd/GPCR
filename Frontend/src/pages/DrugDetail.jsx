@@ -16,19 +16,19 @@ export default function DrugDetail() {
 
     useEffect(() => {
 
-        fetch(`https://gpcr.onrender.com/drug/${mol_id}`)
+        fetch(`http://localhost:8000/drug/${mol_id}`)
             .then(res => res.json())
             .then(data => setDrug(data));
 
-        fetch(`https://gpcr.onrender.com/drug/${mol_id}/sideeffects`)
+        fetch(`http://localhost:8000/drug/${mol_id}/sideeffects`)
             .then(res => res.json())
             .then(data => setSideEffects(data));
 
-        fetch(`https://gpcr.onrender.com/drug/${mol_id}/targets`)
+        fetch(`http://localhost:8000/drug/${mol_id}/targets`)
             .then(res => res.json())
             .then(data => setTargets(data));
 
-        fetch(`https://gpcr.onrender.com/drug/${mol_id}/bioactivity`)
+        fetch(`http://localhost:8000/drug/${mol_id}/bioactivity`)
             .then((res) => res.json())
             .then((data) => setBioactivity(data));
 

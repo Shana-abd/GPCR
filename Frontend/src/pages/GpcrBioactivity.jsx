@@ -10,7 +10,7 @@ export default function GpcrBioactivity() {
 
     useEffect(() => {
 
-        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/bioactivity`)
+        fetch(`http://localhost:8000/gpcr/${gpcr_id}/bioactivity`)
             .then(res => res.json())
             .then(data => setBioactivity(data));
 

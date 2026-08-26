@@ -6,7 +6,7 @@ export default function Stats() {
     const [stats, setStats] = useState(null);
 
     useEffect(() => {
-        fetch("https://gpcr.onrender.com/stats")
+        fetch("http://localhost:8000/stats")
             .then(res => res.json())
             .then(data => setStats(data));
     }, []);

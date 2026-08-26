@@ -10,7 +10,7 @@ export default function GpcrBrowser() {
 
     useEffect(() => {
 
-        fetch("https://gpcr.onrender.com/gpcrs")
+        fetch("http://localhost:8000/gpcrs")
             .then(res => res.json())
             .then(data => setGpcrs(data));
 

@@ -9,7 +9,7 @@ export default function GpcrDrugs() {
 
     useEffect(() => {
 
-        fetch(`https://gpcr.onrender.com/gpcr/${gpcr_id}/drugs`)
+        fetch(`http://localhost:8000/gpcr/${gpcr_id}/drugs`)
             .then(res => res.json())
             .then(data => setDrugs(data));
 

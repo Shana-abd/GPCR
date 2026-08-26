@@ -40,7 +40,7 @@ function SearchPage() {
       return;
     }
 
-    fetch(`https://gpcr.onrender.com/search?q=${query}`)
+    fetch(`http://localhost:8000/search?q=${query}`)
       .then(res => res.json())
       .then(data => setResults(data));
 
@@ -48,7 +48,7 @@ function SearchPage() {
 
   useEffect(() => {
 
-    fetch("https://gpcr.onrender.com/stats")
+    fetch("http://localhost:8000/stats")
       .then(res => res.json())
       .then(setStats);
 
@@ -206,14 +206,26 @@ function SearchPage() {
               </span>{" "}
               Interactions
             </p>
-
             <p>
               <span className="stat-number">
                 {stats?.n_side_effects?.toLocaleString()}
               </span>{" "}
-              Side Effects
+              Fine-level Adverse Events
             </p>
 
+            <p>
+              <span className="stat-number">
+                {stats?.n_mid_labels?.toLocaleString()}
+              </span>{" "}
+              Mid-level Categories
+            </p>
+
+            <p>
+              <span className="stat-number">
+                {stats?.n_coarse_labels?.toLocaleString()}
+              </span>{" "}
+              Coarse-level Categories
+            </p>
           </div>
 
           <div className="footer-column">
