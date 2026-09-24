@@ -96,7 +96,7 @@ function SearchPage() {
 
         <h1 className="home-title">
 
-            GPCR Database
+            GPCRCore
 
         </h1>
 
@@ -106,7 +106,8 @@ function SearchPage() {
             color: "#9ca3af",
             maxWidth: "900px",
             margin: "0 auto 14px",
-            lineHeight: "1.6"
+            lineHeight: "1.6",
+            marginbottom:"10px"
           }}
         >
 
@@ -118,31 +119,12 @@ function SearchPage() {
             color: "#7b8190",
             maxWidth: "760px",
             margin: "0 auto 36px",
-            lineHeight: "1.7"
+            lineHeight: "1.7",
+            marginTop:"10px"
           }}
         >   
-          Integrated GPCR , Drug , Bioactivity and Side effect resource.
+          Integrated Human GPCR , Drug , Bioactivity and Side effect resource.
         </p>
-
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search receptors, drugs, genes, synonyms or ChEMBL IDs..."
-          style={{
-            width: "720px",
-            maxWidth: "92%",
-            padding: "18px 22px",
-            fontSize: "17px",
-            borderRadius: "14px",
-            border: "1px solid #363b46",
-            background: "#23262f",
-            color: "#ffffff",
-            outline: "none",
-            transition: "0.25s",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.15)"
-          }}
-        />
-
         
         <div className="feature-section">
 
@@ -262,10 +244,6 @@ function SearchPage() {
 
             <Link to="/about">
               About
-            </Link>
-
-            <Link to="/about">
-              Contact
             </Link>
 
           </div>

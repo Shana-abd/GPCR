@@ -5,13 +5,21 @@ from database import SessionLocal
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi import Query
+from fastapi import Response, HTTPException
+from sqlalchemy import text
+import math
+import numpy as np
+from prediction.predictor import screen_potential_targets
+
+from rdkit import Chem
+from rdkit.Chem.Draw import rdMolDraw2D, SetDarkMode
 
 from prediction.prediction_service import predict_for_user
 app = FastAPI(
     title="GPCR Database API",
     version="1.0"
 )
-# 
+ 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -26,20 +34,95 @@ app.add_middleware(
 class PredictionRequest(BaseModel):
     gpcr_id: int
     smiles: str
+class TargetScreenRequest(BaseModel):
+    smiles: str
+    top_n: int = 10
 
 @app.get("/")
 def home():
     return {"message": "GPCR Database API running",
             "deploy_test": "v2"}
+@app.post("/potential-targets")
+def potential_targets(request: TargetScreenRequest):
+
+    results = screen_potential_targets(
+        smiles=request.smiles,
+        top_n=request.top_n
+    )
+
+    db = SessionLocal()
+
+    # Get names for the predicted GPCRs
+    gpcr_ids = [r["gpcr_id"] for r in results]
+
+    if gpcr_ids:
+        name_result = db.execute(
+            text("""
+                SELECT
+                    gpcr_id,
+                    t_name,
+                    entry_name
+                FROM gpcr
+                WHERE gpcr_id = ANY(:gpcr_ids)
+            """),
+            {"gpcr_ids": gpcr_ids}
+        )
+
+        gpcr_info = {
+            row["gpcr_id"]: row
+            for row in name_result.mappings().all()
+        }
+    else:
+        gpcr_info = {}
+
+    db.close()
+
+    # Add GPCR names to predictions
+    for result in results:
+
+        info = gpcr_info.get(result["gpcr_id"])
+
+        if info:
+            result["t_name"] = info["t_name"]
+            result["entry_name"] = info["entry_name"]
+        else:
+            result["t_name"] = None
+            result["entry_name"] = None
+
+    return {
+        "query_smiles": request.smiles,
+        "potential_targets": results
+    }
 @app.post("/predict")
 def predict(request: PredictionRequest):
 
-    return predict_for_user(
+    result = predict_for_user(
         smiles=request.smiles,
         gpcr_id=request.gpcr_id,
         top_n=10
     )
 
+    def clean_nan(obj):
+
+        if isinstance(obj, dict):
+            return {
+                key: clean_nan(value)
+                for key, value in obj.items()
+            }
+
+        if isinstance(obj, list):
+            return [
+                clean_nan(value)
+                for value in obj
+            ]
+
+        if isinstance(obj, (float, np.floating)):
+            if not np.isfinite(obj):
+                return None
+
+        return obj
+
+    return clean_nan(result)
 
 @app.get("/gpcrs")
 def get_gpcrs():
@@ -71,40 +154,102 @@ def search(q: str):
 
     db = SessionLocal()
 
+    q = q.strip()
+
     result = db.execute(
         text("""
         SELECT
-            'gpcr' AS result_type,
-            g.gpcr_id::text AS id,
-            g.t_name AS name
+            result_type,
+            id,
+            name
+        FROM (
 
-        FROM gpcr g
+            /* ================= GPCR RESULTS ================= */
 
-        LEFT JOIN gpcr_xrefs x
-            ON g.gpcr_id = x.gpcr_id
+            SELECT
+                'gpcr' AS result_type,
+                g.gpcr_id::text AS id,
+                g.t_name AS name,
 
-        WHERE
-            g.entry_name ILIKE :query
-            OR g.t_name ILIKE :query
-            OR g.alt_names ILIKE :query
-            OR x.chembl_target_id ILIKE :query
+                CASE
+                    WHEN g.gpcr_id::text ILIKE :exact
+                        THEN 1
+                    WHEN g.t_name ILIKE :exact
+                        THEN 1
+                    WHEN g.entry_name ILIKE :exact
+                        THEN 1
+                    WHEN x.chembl_target_id ILIKE :exact
+                        THEN 1
 
-        UNION ALL
+                    WHEN g.gpcr_id::text ILIKE :prefix
+                        THEN 2
+                    WHEN g.t_name ILIKE :prefix
+                        THEN 2
+                    WHEN g.entry_name ILIKE :prefix
+                        THEN 2
+                    WHEN x.chembl_target_id ILIKE :prefix
+                        THEN 2
 
-        SELECT
-            'drug' AS result_type,
-            m.mol_id AS id,
-            m.mol_name AS name
+                    ELSE 3
+                END AS search_rank
 
-        FROM molecule m
+            FROM gpcr g
 
-        WHERE
-            m.mol_name ILIKE :query
-            OR m.mol_id ILIKE :query
+            LEFT JOIN gpcr_xrefs x
+                ON g.gpcr_id = x.gpcr_id
 
-        LIMIT 50
+            WHERE
+                g.gpcr_id::text ILIKE :query
+                OR g.t_name ILIKE :query
+                OR g.entry_name ILIKE :query
+                OR g.alt_names ILIKE :query
+                OR x.chembl_target_id ILIKE :query
+
+
+            UNION ALL
+
+
+            /* ================= MOLECULE RESULTS ================= */
+
+            SELECT
+                'drug' AS result_type,
+                m.mol_id AS id,
+                m.mol_name AS name,
+
+                CASE
+                    WHEN m.mol_id ILIKE :exact
+                        THEN 1
+                    WHEN m.mol_name ILIKE :exact
+                        THEN 1
+
+                    WHEN m.mol_id ILIKE :prefix
+                        THEN 2
+                    WHEN m.mol_name ILIKE :prefix
+                        THEN 2
+
+                    ELSE 3
+                END AS search_rank
+
+            FROM molecule m
+
+            WHERE
+                m.mol_id ILIKE :query
+                OR m.mol_name ILIKE :query
+
+        ) AS search_results
+
+        ORDER BY
+            search_rank,
+            name NULLS LAST,
+            id
+
+        LIMIT 10
         """),
-        {"query": f"%{q}%"}
+        {
+            "query": f"%{q}%",
+            "exact": q,
+            "prefix": f"{q}%"
+        }
     )
 
     rows = result.mappings().all()
@@ -292,7 +437,7 @@ def get_drug_sideeffects(mol_id: str):
         text("""
             SELECT
              
-                se.term,
+                se.term AS fine_label,
                 se.mid_label,
                 se.coarse_label,
                 dse.side_effect_id,
@@ -306,7 +451,7 @@ def get_drug_sideeffects(mol_id: str):
             ORDER BY
                 coarse_label,
                 mid_label,
-                term
+                fine_label
 
         
         """),
@@ -359,9 +504,14 @@ print("el")
 @app.get("/drugs")
 def get_drugs(
     search: str = Query(default=""),
-    limit: int = Query(default=50),
+    limit: int = Query(default=20),
     offset: int = Query(default=0)
 ):
+
+    search = search.strip()
+
+    if not search:
+        return []
 
     db = SessionLocal()
 
@@ -373,26 +523,23 @@ def get_drugs(
             m.mol_id,
             m.mol_name,
             m.drugbank_id,
-            m.pubchem_cid,
-
-            d.mol_wt,
-            d.logp,
-            d.tpsa
+            m.pubchem_cid
 
         FROM molecule m
 
-        LEFT JOIN mol_descriptors d
-            ON m.mol_id = d.mol_id
-
         WHERE
-        (
-            :search = ''
-            OR m.mol_name ILIKE :pattern
-            OR CAST(m.mol_id AS TEXT) ILIKE :pattern
-            OR COALESCE(m.drugbank_id, '') ILIKE :pattern
-        )
+            m.mol_name ILIKE :pattern
+            OR m.mol_id ILIKE :pattern
+            OR m.drugbank_id ILIKE :pattern
 
         ORDER BY
+            CASE
+                WHEN LOWER(m.mol_id) = LOWER(:search) THEN 0
+                WHEN LOWER(m.mol_name) = LOWER(:search) THEN 1
+                WHEN LOWER(m.mol_id) LIKE LOWER(:pattern) THEN 2
+                WHEN LOWER(m.mol_name) LIKE LOWER(:pattern) THEN 3
+                ELSE 4
+            END,
             m.mol_name
 
         LIMIT :limit
@@ -411,7 +558,7 @@ def get_drugs(
     db.close()
 
     return rows
-print("get_drugs")
+
 @app.get("/drug/{mol_id}/bioactivity")
 def get_drug_bioactivity(mol_id: str):
 
@@ -434,9 +581,14 @@ def get_drug_bioactivity(mol_id: str):
 
             b.pchembl_value,
 
-            b.max_ph,
-
+            b.max_ph AS max_phase,
+            b.lig_lle,
+            b.lig_sei,
+            b.lig_bei,
+            b.lig_le,
+        
             g.gpcr_id,
+
             g.t_name AS gpcr_name
 
         FROM bioactivity b
@@ -508,6 +660,74 @@ def get_gpcr_bioactivity(gpcr_id: int):
     db.close()
 
     return rows
+from fastapi import Response, HTTPException
+from sqlalchemy import text
+
+from rdkit import Chem
+from rdkit.Chem.Draw import rdMolDraw2D
+
+
+@app.get("/drug/{mol_id}/structure")
+def get_drug_structure(mol_id: str):
+
+    db = SessionLocal()
+
+    result = db.execute(
+        text("""
+            SELECT smiles
+            FROM molecule
+            WHERE mol_id = :mol_id
+        """),
+        {"mol_id": mol_id}
+    ).fetchone()
+
+    db.close()
+
+    # Molecule doesn't exist
+    if not result:
+        raise HTTPException(
+            status_code=404,
+            detail="Molecule not found"
+        )
+
+    smiles = result[0]
+
+    # No SMILES
+    if not smiles or not str(smiles).strip():
+        raise HTTPException(
+            status_code=404,
+            detail="No SMILES available"
+        )
+
+    mol = Chem.MolFromSmiles(smiles)
+
+    # Invalid SMILES
+    if mol is None:
+        raise HTTPException(
+            status_code=422,
+            detail="Invalid SMILES"
+        )
+
+    # Generate SVG
+    drawer = rdMolDraw2D.MolDraw2DSVG(500, 250)
+
+    # Dark-mode molecular drawing
+    from rdkit.Chem.Draw import SetDarkMode
+
+    SetDarkMode(drawer)
+
+    # Keep the SVG background transparent
+    drawer.drawOptions().clearBackground = False
+
+    drawer.DrawMolecule(mol)
+    drawer.FinishDrawing()
+
+    svg = drawer.GetDrawingText()
+
+    return Response(
+        content=svg,
+        media_type="image/svg+xml"
+    )
 @app.get("/gpcr/{gpcr_id}/expression")
 def get_expression(gpcr_id: int):
 
@@ -570,6 +790,36 @@ def get_assay(assay_id: int):
     db.close()
 
     return row
+@app.get("/drug/{mol_id}/summary")
+def get_drug_summary(mol_id: str):
+
+    db = SessionLocal()
+
+    result = db.execute(
+        text("""
+            SELECT
+                COUNT(*) AS n_bioactivity_records,
+
+                COUNT(DISTINCT assay_id) AS n_assays,
+
+                MAX(pchembl_value) AS max_pchembl,
+
+                AVG(pchembl_value) AS mean_pchembl,
+
+                PERCENTILE_CONT(0.5)
+                    WITHIN GROUP (ORDER BY pchembl_value)
+                    AS median_pchembl
+
+            FROM bioactivity
+
+            WHERE mol_id = :mol_id
+        """),
+        {"mol_id": mol_id}
+    ).mappings().first()
+
+    db.close()
+
+    return result
 @app.get("/stats")
 def get_stats():
 
@@ -579,11 +829,9 @@ def get_stats():
         text("""
         SELECT
             (SELECT COUNT(*) FROM gpcr) AS n_gpcrs,
-            (SELECT COUNT(DISTINCT smiles) FROM molecule) AS n_drugs,
+            (SELECT COUNT(*) FROM molecule) AS n_drugs,
             (SELECT COUNT(*) FROM drug_gpcr_v2) AS n_interactions,
             (SELECT COUNT(*) FROM side_effect) AS n_side_effects,
-            (SELECT COUNT(DISTINCT mid_label) FROM side_effect) AS n_mid_labels,
-            (SELECT COUNT(DISTINCT coarse_label) FROM side_effect) AS n_coarse_labels,
             (SELECT COUNT(*) FROM expression_summary)
             AS gpcr_with_expression,
 
@@ -614,4 +862,6 @@ print("\n===== REGISTERED ROUTES =====")
 
 for route in app.routes:
     print(route.path)
+
+
 

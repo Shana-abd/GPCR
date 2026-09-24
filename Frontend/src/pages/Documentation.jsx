@@ -60,7 +60,7 @@ export default function Documentation() {
                 <h1>Getting Started</h1>
 
                 <p className="doc-lead">
-                    Welcome! The GPCR Drug Discovery Platform was designed to
+                    Welcome! GPCRCore was designed to
                     be straightforward to explore, so if you enjoy discovering
                     things on your own, feel free to jump right in.
                 </p>

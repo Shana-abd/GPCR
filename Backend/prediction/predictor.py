@@ -3,7 +3,7 @@ import numpy as np
 import xgboost as xgb
 
 from prediction.rdkit_features import compute_drug_features
-from prediction.gpcr_features import get_gpcr_features
+from prediction.gpcr_features import get_gpcr_features, GPCR_CACHE
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 # ==========================================================
@@ -95,7 +95,70 @@ def predict_pchembl(smiles: str, gpcr_id: int):
     prediction = model.predict(dmatrix)[0]
 
     return float(prediction)
+def screen_potential_targets(smiles: str, top_n: int = 20):
 
+    # Compute drug features once
+    drug = compute_drug_features(smiles)
+
+    results = []
+
+    # Screen all cached GPCRs
+    for gpcr_id, gpcr in GPCR_CACHE.items():
+
+        try:
+            features = {}
+
+            features.update(drug)
+            features.update(gpcr)
+
+            # gpcr_id is not a model feature
+            features.pop("gpcr_id", None)
+
+            # Check required features
+            missing = [
+                f for f in FEATURE_ORDER
+                if f not in features
+            ]
+
+            if missing:
+                continue
+
+            # Build feature vector
+            X = np.array(
+                [features[f] for f in FEATURE_ORDER],
+                dtype=np.float32
+            ).reshape(1, -1)
+
+            # Skip invalid values
+            if not np.isfinite(X).all():
+                continue
+
+            dmatrix = xgb.DMatrix(X)
+
+            prediction = model.predict(dmatrix)[0]
+            prediction = float(prediction)
+
+            if not np.isfinite(prediction):
+                continue
+
+            results.append({
+                "gpcr_id": int(gpcr_id),
+                "predicted_pchembl": round(prediction, 3)
+            })
+
+        except Exception as e:
+            print(
+                f"Skipping GPCR {gpcr_id}: {e}"
+            )
+            continue
+
+    # Rank highest predicted pChEMBL first
+    results.sort(
+        key=lambda x: x["predicted_pchembl"],
+        reverse=True
+    )
+
+    return results[:top_n]
 # ==========================================================
 # TEST
 # ==========================================================

@@ -13,26 +13,42 @@ export default function DrugDetail() {
     const [showSideEffects, setShowSideEffects] = useState(false);
     const [showBioactivity, setShowBioactivity] = useState(false);
     const [showTargets, setShowTargets] = useState(false);
+    const [summary, setSummary] = useState(null);
+    const copySmiles = async () => {
+        if (!drug?.smiles) return;
+
+        try {
+            await navigator.clipboard.writeText(drug.smiles);
+        } catch (err) {
+            console.error("Failed to copy SMILES:", err);
+        }
+    };
+    const [showFullName, setShowFullName] = useState(false);
 
     useEffect(() => {
 
-        fetch(`http://localhost:8000/drug/${mol_id}`)
+        fetch(`http://127.0.0.1:8000/drug/${mol_id}`)
             .then(res => res.json())
             .then(data => setDrug(data));
 
-        fetch(`http://localhost:8000/drug/${mol_id}/sideeffects`)
+        fetch(`http://127.0.0.1:8000/drug/${mol_id}/summary`)
+            .then(res => res.json())
+            .then(data => setSummary(data));
+
+        fetch(`http://127.0.0.1:8000/drug/${mol_id}/sideeffects`)
             .then(res => res.json())
             .then(data => setSideEffects(data));
 
-        fetch(`http://localhost:8000/drug/${mol_id}/targets`)
+        fetch(`http://127.0.0.1:8000/drug/${mol_id}/targets`)
             .then(res => res.json())
             .then(data => setTargets(data));
 
-        fetch(`http://localhost:8000/drug/${mol_id}/bioactivity`)
-            .then((res) => res.json())
-            .then((data) => setBioactivity(data));
+        fetch(`http://127.0.0.1:8000/drug/${mol_id}/bioactivity`)
+            .then(res => res.json())
+            .then(data => setBioactivity(data));
 
     }, [mol_id]);
+
     const groupedSideEffects = useMemo(() => {
 
         const grouped = {};
@@ -99,25 +115,54 @@ export default function DrugDetail() {
         drug.lipinskiviolations != null ||
         drug.isdruglike != null;
 
-    const hasSummary =
-        drug.n_bioactivity_records ||
-        drug.n_assays ||
-        drug.max_pchembl ||
-        drug.mean_pchembl ||
-        drug.median_pchembl;
+    const hasSummary = summary != null;
 
     const showAction = bioactivity.some(
         r => r.action_type
     );
+    const showActivity = bioactivity.some(
+        r => r.standard_type != null && String(r.standard_type).trim() !== ""
+    );
 
     const showPhase = bioactivity.some(
         r => r.max_phase != null
+    );
+    const showLigLE = bioactivity.some(
+        r => r.lig_le != null
+    );
+
+    const showLLE = bioactivity.some(
+        r => r.lig_lle != null
+    );
+
+    const showSEI = bioactivity.some(
+        r => r.lig_sei != null
+    );
+
+    const showBEI = bioactivity.some(
+        r => r.lig_bei != null
     );
 
     const showPchembl = bioactivity.some(
         r => r.pchembl_value != null
     );
     console.log(sideEffects);
+    const cleanRelation = (relation) => {
+        if (!relation) return "";
+        return String(relation).replace(/^['"]|['"]$/g, "");
+    };
+    const drugName = drug.mol_name || drug.mol_id;
+    const maxNameLength = 60;
+
+    const displayName =
+        showFullName || drugName.length <= maxNameLength
+            ? drugName
+            : drugName.slice(0, maxNameLength) + "...";
+    const filteredBioactivity = bioactivity.filter(
+        (record) =>
+            (record.std_value != null && record.std_value !== "") ||
+            (record.pchembl_value != null && record.pchembl_value !== "")
+    );
 
     return (
         <div style={{ padding: "40px" }}>
@@ -178,88 +223,166 @@ export default function DrugDetail() {
 
             )}    
             {hasProperties && (
-                 <>
+                <>
                     <h2 className="subsection-title">
-
                         Physicochemical Properties
-
-                    </h2>
-                    <div className="property-list">
-
-                        {renderRow(
-                            "Molecular Weight",
-                            drug.mol_wt ? `${Number(drug.mol_wt).toFixed(2)} Da` : null
-                        )}
-
-                        {renderRow(
-                            "LogP",
-                            drug.logp ? Number(drug.logp).toFixed(2) : null
-                        )}
-                        {renderRow(
-                            "TPSA",
-                            drug.tpsa != null
-                            ? `${Number(drug.tpsa).toFixed(1)} Å²`
-                            : null
-                        )}
-
-                        {renderRow("HBA", drug.hba)}
-
-                        {renderRow("HBD", drug.hbd)}
-
-                        {renderRow("Rotatable Bonds", drug.rotatable_bonds)}
-
-                        {renderRow("Heavy Atom Count", drug.heavy_atom_count)}
-
-                        {renderRow(
-                            "Fraction Csp3",
-                            drug.frac_csp3 != null
-                            ? Number(drug.frac_csp3).toFixed(3)
-                            : null
-                        )}
-
-                        {renderRow("Aromatic Rings", drug.aromatic_rings)}
-
-                        {renderRow(
-                            "QED",
-                            drug.qed ? Number(drug.qed).toFixed(3) : null
-                        )}
-
-                        {renderRow("Lipinski Violations", drug.lipinskiviolations)}
-
-                        {renderRow(
-                            "Drug-like",
-                            drug.isdruglike == null
-                            ? null
-                            : (drug.isdruglike ? "Yes" : "No")
-                        )}
-
-                    </div>
-                </>
-            )}        
-            
-            {hasSummary && (
-                 <>
-                    <h2 className="subsection-title">
-
-                        Database Summary
-
                     </h2>
 
-                    <div className="property-list">
+                    <div className="properties-structure-layout">
 
-                        {renderRow("Bioactivity Records", drug.n_bioactivity_records)}
+                        <div className="property-list">
+                            {renderRow(
+                                "Molecular Weight",
+                                drug.mol_wt
+                                    ? `${Number(drug.mol_wt).toFixed(2)} Da`
+                                    : null
+                            )}
 
-                        {renderRow("Assays", drug.n_assays)}
+                            {renderRow(
+                                "LogP",
+                                drug.logp
+                                    ? Number(drug.logp).toFixed(2)
+                                    : null
+                            )}
 
-                        {renderRow("Maximum pChEMBL", drug.max_pchembl)}
+                            {renderRow(
+                                "TPSA",
+                                drug.tpsa != null
+                                    ? `${Number(drug.tpsa).toFixed(1)} Å²`
+                                    : null
+                            )}
 
-                        {renderRow("Mean pChEMBL", drug.mean_pchembl)}
+                            {renderRow("HBA", drug.hba)}
 
-                        {renderRow("Median pChEMBL", drug.median_pchembl)} 
+                            {renderRow("HBD", drug.hbd)}
+
+                            {renderRow(
+                                "Rotatable Bonds",
+                                drug.rotatable_bonds
+                            )}
+
+                            {renderRow(
+                                "Heavy Atom Count",
+                                drug.heavy_atom_count
+                            )}
+
+                            {renderRow(
+                                "Fraction Csp3",
+                                drug.frac_csp3 != null
+                                    ? Number(drug.frac_csp3).toFixed(3)
+                                    : null
+                            )}
+
+                            {renderRow(
+                                "Aromatic Rings",
+                                drug.aromatic_rings
+                            )}
+
+                            {renderRow(
+                                "QED",
+                                drug.qed
+                                    ? Number(drug.qed).toFixed(3)
+                                    : null
+                            )}
+
+                            {renderRow(
+                                "Lipinski Violations",
+                                drug.lipinskiviolations
+                            )}
+
+                            {renderRow(
+                                "Drug-like",
+                                drug.isdruglike == null
+                                    ? null
+                                    : (drug.isdruglike ? "Yes" : "No")
+                            )}
+                        </div>
+
+                        <div className="drug-structure-area">
+
+                            {drug.smiles && (
+                                <>
+                                    <div className="structure-title">
+                                    </div>
+
+                                    <img
+                                        src={`http://127.0.0.1:8000/drug/${mol_id}/structure`}
+                                        alt="2D molecular structure"
+                                        className="drug-structure-image"
+                                    />
+                                    <div className="smiles-section">
+
+                                        <div className="smiles-title">
+                                            SMILES
+                                        </div>
+
+                                        <div className="smiles-box">
+
+                                            <span className="smiles-text">
+                                                {drug.smiles}
+                                            </span>
+
+                                            <button
+                                                type="button"
+                                                className="copy-smiles-button"
+                                                onClick={copySmiles}
+                                                title="Copy SMILES"
+                                            >
+                                                Copy
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+                                </>
+                            )}
+
+                        </div>
+
                     </div>
                 </>
             )}
+            <div className="summary-structure-layout">
 
+                <div className="summary-column">
+                   {summary && (
+                        <>
+                            <h2 className="subsection-title">
+                                Database Summary
+                            </h2>
+
+                            <div className="property-list">
+                                {renderRow(
+                                    "Bioactivity Records",
+                                    summary.n_bioactivity_records
+                                )}
+
+                                {renderRow(
+                                    "Assays",
+                                    summary.n_assays
+                                )}
+
+                                {renderRow(
+                                    "Maximum pChEMBL",
+                                    Number(summary.max_pchembl).toFixed(2)
+                                )}
+
+                                {renderRow(
+                                    "Mean pChEMBL",
+                                    Number(summary.mean_pchembl).toFixed(2)
+                                )}
+
+                                {renderRow(
+                                    "Median pChEMBL",
+                                    Number(summary.median_pchembl).toFixed(2)
+                                )}
+                            </div>
+                        </>
+                    )}
+                </div>
+
+            </div>
+        
             <h2 className="subsection-title">
 
                 Explore This Drug
@@ -349,7 +472,7 @@ export default function DrugDetail() {
                     fontWeight: "bold"
                 }}
             >
-                📊 {showBioactivity ? "Hide" : "View"} Bioactivity Records ({bioactivity.length})
+                📊 {showBioactivity ? "Hide" : "View"} Bioactivity Records ({filteredBioactivity.length})
             </div>
 
             {showBioactivity && (
@@ -409,7 +532,13 @@ export default function DrugDetail() {
 
                 <tbody className="bioactivity-body">
 
-                    {bioactivity.map((record) => (
+                    {bioactivity
+                        .filter(
+                            (record) =>
+                                (record.std_value != null && record.std_value !== "") ||
+                                (record.pchembl_value != null && record.pchembl_value !== "")
+                        )
+                    .map((record) => (
 
                         <tr 
                             key={record.bioactivity_id}
@@ -423,7 +552,7 @@ export default function DrugDetail() {
                                     className="bioactivity-gpcr"
                                 >
 
-                                    {record.t_name}
+                                    {record.gpcr_name}
 
                                 </Link>
 
@@ -432,20 +561,18 @@ export default function DrugDetail() {
                             <td className="bioactivity-cell">
 
                                 <div className="activity-cell">
-
-                                    {record.std_type}
-                                    {" • "}
-
-                                    {record.std_relation || ""}
-
-                                    {" "}
-
-                                    {record.std_value}
-
-                                    {" nM"}
-
-                            
-
+                                    {record.standard_value != null && record.standard_value !== "" ? (
+                                        <>
+                                            {record.standard_type}
+                                            {" "}
+                                            {record.standard_relation?.replace(/['"]/g, "") || ""}
+                                            {" "}
+                                            {record.standard_value}
+                                            {" nM"}
+                                        </>
+                                    ) : (
+                                        ""
+                                    )}
                                 </div>
 
                             </td>

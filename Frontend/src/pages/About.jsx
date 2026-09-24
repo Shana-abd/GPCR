@@ -40,10 +40,10 @@ export default function About() {
 
             <div className="about-container">
 
-            <h1>About the GPCR Drug Discovery Platform</h1>
+            <h1>The Human GPCR Drug Discovery Platform</h1>
 
             <p>
-                The <b>GPCR Drug Discovery Platform</b> is a comprehensive web-based
+                <b>GPCRCore</b> is a comprehensive web-based
                 resource designed to facilitate the exploration of G protein-coupled
                 receptors (GPCRs), one of the largest and most therapeutically important
                 families of drug targets covering one by third of FDA approved drug targets.
@@ -174,7 +174,7 @@ export default function About() {
             <h2>Applications</h2>
 
             <p>
-                The GPCR Drug Discovery Platform supports a broad range of research
+                GPCRCore supports a broad range of research
                 applications including GPCR pharmacology, drug discovery, target
                 prioritization, computational biology, bioinformatics, systems
                 pharmacology and machine learning-assisted drug development.

@@ -10,17 +10,60 @@ import { useRef } from "react";
 export default function PchemblPrediction() {
 
     const [gpcrs, setGpcrs] = useState([]);
+    const [potentialTargets, setPotentialTargets] = useState([]);
+    const [showPotentialTargets, setShowPotentialTargets] = useState(false);
+    const [loadingTargets, setLoadingTargets] = useState(false);
     const [filter, setFilter] = useState("");
     const [selectedGpcr, setSelectedGpcr] = useState(null);
     const [smiles, setSmiles] = useState("");
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const findPotentialTargets = async () => {
+        if (!smiles.trim()) {
+            alert("Please enter a SMILES first.");
+            return;
+        }
+
+        setLoadingTargets(true);
+        setShowPotentialTargets(false);
+
+        try {
+            const res = await fetch(
+                "http://127.0.0.1:8000/potential-targets",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        smiles: smiles,
+                        top_n: 20
+                    })
+                }
+            );
+
+            if (!res.ok) {
+                throw new Error("Target screening failed");
+            }
+
+            const data = await res.json();
+
+            setPotentialTargets(data.potential_targets || []);
+            setShowPotentialTargets(true);
+
+        } catch (error) {
+            console.error(error);
+            alert("Unable to predict potential GPCR targets.");
+        } finally {
+            setLoadingTargets(false);
+        }
+    };
     const resultRef = useRef(null);
 
     useEffect(() => {
 
-        fetch("http://localhost:8000/gpcrs")
+        fetch("http://127.0.0.1:8000/gpcrs")
             .then((res) => res.json())
             .then((data) => setGpcrs(data));
 
@@ -45,7 +88,7 @@ export default function PchemblPrediction() {
         try {
 
             const response = await fetch(
-                "http://localhost:8000/predict",
+                "http://127.0.0.1:8000/predict",
                 {
                     method: "POST",
                     headers: {
@@ -162,9 +205,8 @@ export default function PchemblPrediction() {
                         padding: "12px",
                         fontSize: "16px",
                         borderRadius: "8px",
-                        background: "#24262B",
-                        color: "#c5dcf3",
-                        border: "1px solid #3B3E46"
+                        border: "1px solid #ccc",
+                        resize: "vertical"
                     }}
                 />
 
@@ -172,12 +214,12 @@ export default function PchemblPrediction() {
 
                     <div
                         style={{
-                            border: "1px solid #ddd",
+                            border: "1px solid #dddddd44",
                             borderRadius: "8px",
                             marginTop: "10px",
                             maxHeight: "250px",
                             overflowY: "auto",
-                            background: "white"
+                            color: "#9beecf"
                         }}
                     >
 
@@ -224,9 +266,8 @@ export default function PchemblPrediction() {
                         style={{
                             marginTop: "20px",
                             padding: "16px",
-                            border: "1px solid #ddd",
-                            borderRadius: "8px",
-                            background: "#F5F5F5"
+                            border: "1px solid #dddddd59",
+                            borderRadius: "8px"
                         }}
                     >
 
@@ -274,7 +315,27 @@ export default function PchemblPrediction() {
                         opacity: loading ? 0.7 : 1
                     }}
                 >
+                    
+                
                     {loading ? "Predicting..." : "Predict"}
+                </button>
+                <button
+                    onClick={findPotentialTargets}
+                    disabled={loadingTargets || !smiles.trim()}
+                    style={{
+                        marginTop: "12px",
+                        padding: "10px 18px",
+                        borderRadius: "8px",
+                        border: "1px solid #3A4F49",
+                        background: "#24332F",
+                        color: "#E1ECE8",
+                        cursor: loadingTargets ? "wait" : "pointer",
+                        fontWeight: "600"
+                    }}
+                >
+                    {loadingTargets
+                        ? "Screening GPCRs..."
+                        : "Find Potential GPCR Targets"}
                 </button>
                 {error && (
 
@@ -299,6 +360,138 @@ export default function PchemblPrediction() {
                 <SimilarMoleculesTable
                     ligands={result?.similar_molecules?.unannotated}
                 />
+                {showPotentialTargets && (
+                    <div style={{ marginTop: "40px" }}>
+
+                        <h2 className="subsection-title">
+                            Potential GPCR Targets
+                        </h2>
+
+                        {potentialTargets.length === 0 ? (
+
+                            <div
+                                style={{
+                                    padding: "20px",
+                                    color: "#9FB3AD"
+                                }}
+                            >
+                                No potential GPCR targets could be predicted.
+                            </div>
+
+                        ) : (
+
+                            <table
+                                style={{
+                                    width: "100%",
+                                    borderCollapse: "collapse",
+                                    background: "#17221F"
+                                }}
+                            >
+
+                                <thead>
+
+                                    <tr
+                                        style={{
+                                            background: "#20312C"
+                                        }}
+                                    >
+
+                                        <th
+                                            style={{
+                                                padding: "12px",
+                                                textAlign: "left",
+                                                color: "#E8F2EF",
+                                                borderBottom: "2px solid #30443E"
+                                            }}
+                                        >
+                                            Rank
+                                        </th>
+
+                                        <th
+                                            style={{
+                                                padding: "12px",
+                                                textAlign: "left",
+                                                color: "#E8F2EF",
+                                                borderBottom: "2px solid #30443E"
+                                            }}
+                                        >
+                                            GPCR
+                                        </th>
+
+                                        <th
+                                            style={{
+                                                padding: "12px",
+                                                textAlign: "left",
+                                                color: "#E8F2EF",
+                                                borderBottom: "2px solid #30443E"
+                                            }}
+                                        >
+                                            Predicted pChEMBL
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    {potentialTargets.map((target, index) => (
+
+                                        <tr key={target.gpcr_id}>
+
+                                            <td
+                                                style={{
+                                                    padding: "12px",
+                                                    color: "#9FB3AD",
+                                                    borderBottom: "1px solid #30443E"
+                                                }}
+                                            >
+                                                {index + 1}
+                                            </td>
+
+                                            <td
+                                                style={{
+                                                    padding: "12px",
+                                                    borderBottom: "1px solid #30443E"
+                                                }}
+                                            >
+                                                <Link
+                                                    to={`/gpcr/${target.gpcr_id}`}
+                                                    style={{
+                                                        color: "#7FB8A8",
+                                                        textDecoration: "none",
+                                                        fontWeight: "500"
+                                                    }}
+                                                >
+                                                    {target.t_name}
+                                                </Link>
+                                            </td>
+
+                                            <td
+                                                style={{
+                                                    padding: "12px",
+                                                    color: "#B8DCCF",
+                                                    fontWeight: "600",
+                                                    borderBottom: "1px solid #30443E"
+                                                }}
+                                            >
+                                                {Number(
+                                                    target.predicted_pchembl
+                                                ).toFixed(2)}
+                                            </td>
+
+                                        </tr>
+
+                                    ))}
+
+                                </tbody>
+
+                            </table>
+
+                        )}
+
+                    </div>
+                )}
 
             </div>
 
