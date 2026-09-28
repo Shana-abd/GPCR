@@ -152,7 +152,7 @@ The repository contains an example environment configuration:
 .env.example
 ```
 
-Copy the example configuration to create a local `.env` file and replace the placeholder values with the credentials for the local PostgreSQL installation.
+Copy the example configuration into the Backend directory as .env, and replace the placeholder values with the credentials for the local PostgreSQL installation.
 
 The actual `.env` file should not be committed to the repository.
 

@@ -316,9 +316,6 @@ def get_gpcr(gpcr_id: int):
     )
 
     row = result.mappings().first()
-    print("ALT_NAMES:", row.get("alt_names"))
-    print("ROW KEYS:", row.keys())
-
     db.close()
 
     return row
@@ -500,7 +497,7 @@ def get_drug_targets(mol_id: str):
 
     return rows
 
-print("el")
+
 @app.get("/drugs")
 def get_drugs(
     search: str = Query(default=""),
