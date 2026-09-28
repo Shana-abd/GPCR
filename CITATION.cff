@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "GPCRCore"
+authors:
+  - family-names: "Abdu Samad"
+    given-names: "Shana"
+    affiliation: "National Institute of Science Education and Research (NISER), Bhubaneswar, India"
+  - family-names: "Konkimalla"
+    given-names: "V Badireenath"
+    affiliation: "National Institute of Science Education and Research (NISER), Bhubaneswar, India"
+  
+version: v1.0.3
+date-released: 2026-09-28
+license: MIT
+repository-code: "https://github.com/Shana-abd/GPCR"
